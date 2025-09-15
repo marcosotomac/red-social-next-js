@@ -17,7 +17,6 @@ import {
   Search,
   Heart,
   User,
-  Bell,
   LogOut,
   Settings,
   Bookmark,
@@ -26,6 +25,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 interface NavigationProps {
   user?: {
@@ -41,7 +41,6 @@ export function Navigation({ user }: NavigationProps) {
   const router = useRouter();
   const supabase = createClient();
   const { totalUnreadCount } = useMessageNotifications();
-  const notifications = 3; // Mock notification count
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -56,12 +55,6 @@ export function Navigation({ user }: NavigationProps) {
       icon: MessageCircle,
       label: "Messages",
       count: totalUnreadCount,
-    },
-    {
-      href: "/notifications",
-      icon: Bell,
-      label: "Notifications",
-      count: notifications,
     },
     { href: "/bookmarks", icon: Bookmark, label: "Bookmarks", count: 0 },
     { href: "/likes", icon: Heart, label: "Liked Posts", count: 0 },
@@ -133,6 +126,7 @@ export function Navigation({ user }: NavigationProps) {
           {/* User Menu */}
           {user ? (
             <div className="flex items-center space-x-2">
+              <NotificationBell />
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
