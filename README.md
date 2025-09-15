@@ -1,18 +1,49 @@
-# Softsocial - A Gentle Social Media MVP
+# Softsocial - A Gentle Social Media Platform
 
 A mindful social media platform built with Next.js, Supabase, and shadcn/ui components, focusing on kindness and meaningful connections.
 
 ## 🌸 Features
 
-- **Mindful Design**: Soft, gentle UI with soothing colors and smooth animations
+### Core Social Features
+
 - **Secure Authentication**: User signup/login with Supabase Auth
+- **Profile Management**: Create and edit user profiles with avatars
+- **Post Creation**: Share posts with text and images (up to 500 characters)
 - **Social Interactions**:
-  - Create and share posts (up to 500 characters)
   - Like and comment on posts
   - Follow/unfollow other users
-  - View user profiles with stats
-- **Real-time Updates**: Automatic feed refresh and live interactions
-- **Responsive Design**: Works beautifully on desktop and mobile
+  - View user profiles with follower/following counts
+- **Real-time Feed**: Automatic updates and live interactions
+
+### Enhanced Features
+
+- **Image Upload System**:
+  - Upload images for posts and profile avatars
+  - Drag & drop interface with Supabase Storage
+  - Automatic image optimization and secure storage
+- **Comments System**:
+  - Threaded comments on posts
+  - Like comments and reply functionality
+  - Delete your own comments
+- **User Discovery**:
+  - Search for users by name or username
+  - Trending topics and hashtags
+  - Suggested users to follow
+- **Notifications**:
+  - Get notified about likes, comments, and new followers
+  - Real-time notification badges
+  - Activity timeline with timestamps
+- **Settings Page**:
+  - Edit profile information
+  - Update avatar and bio
+  - Manage account preferences
+
+### Design & UX
+
+- **Mindful Design**: Soft, gentle UI with soothing pink/purple gradients
+- **Responsive Layout**: Works beautifully on desktop, tablet, and mobile
+- **Smooth Animations**: Gentle transitions and hover effects
+- **Accessibility**: Proper contrast ratios and keyboard navigation
 
 ## 🚀 Getting Started
 

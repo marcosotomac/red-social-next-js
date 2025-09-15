@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ImageIcon, Smile, MapPin, Calendar } from "lucide-react";
+import { ImageUpload } from "@/components/ImageUpload";
+import { ImageIcon, Smile, MapPin, Calendar, X } from "lucide-react";
 
 interface CreatePostProps {
   user: {
@@ -18,6 +19,8 @@ interface CreatePostProps {
 
 export function CreatePost({ user, onPost }: CreatePostProps) {
   const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showImageUpload, setShowImageUpload] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
   const handleSubmit = async () => {
@@ -25,8 +28,10 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
 
     setIsPosting(true);
     try {
-      await onPost?.(content);
+      await onPost?.(content, imageUrl || undefined);
       setContent("");
+      setImageUrl(null);
+      setShowImageUpload(false);
     } catch (error) {
       console.error("Error posting:", error);
     } finally {
@@ -73,15 +78,35 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
           maxLength={500}
         />
 
+        {/* Image Upload Section */}
+        {showImageUpload && (
+          <ImageUpload
+            bucket="post-images"
+            currentImage={imageUrl || undefined}
+            onUploadComplete={(url) => setImageUrl(url)}
+            onRemove={() => setImageUrl(null)}
+            className="mb-4"
+          />
+        )}
+
         {/* Character Counter */}
         <div className="flex justify-between items-center text-sm">
           <div className="flex items-center space-x-4 text-gray-500">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 hover:bg-pink-50 hover:text-pink-600"
+              onClick={() => setShowImageUpload(!showImageUpload)}
+              className={`h-8 w-8 p-0 transition-colors ${
+                showImageUpload
+                  ? "bg-pink-50 text-pink-600"
+                  : "hover:bg-pink-50 hover:text-pink-600"
+              }`}
             >
-              <ImageIcon className="h-4 w-4" />
+              {showImageUpload ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <ImageIcon className="h-4 w-4" />
+              )}
             </Button>
             <Button
               variant="ghost"

@@ -124,13 +124,14 @@ export default function FeedPage() {
     }
   }, [user, fetchPosts]);
 
-  const handleCreatePost = async (content: string) => {
+  const handleCreatePost = async (content: string, imageUrl?: string) => {
     if (!user) return;
 
     try {
       const { error } = await supabase.from("posts").insert({
         author_id: user.id,
         content,
+        image_url: imageUrl,
       });
 
       if (error) throw error;
@@ -245,7 +246,11 @@ export default function FeedPage() {
             <ScrollArea className="space-y-6">
               {posts.map((post) => (
                 <div key={post.id} className="mb-6">
-                  <PostCard post={post} onLike={handleLike} />
+                  <PostCard
+                    post={post}
+                    currentUserId={user.id}
+                    onLike={handleLike}
+                  />
                 </div>
               ))}
             </ScrollArea>
