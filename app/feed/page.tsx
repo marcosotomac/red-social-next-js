@@ -6,11 +6,16 @@ import { createClient } from "@/lib/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { PostCard } from "@/components/PostCard";
 import { CreatePost } from "@/components/CreatePost";
+import { StoriesRow } from "@/components/StoriesRow";
+import { StoryViewer } from "@/components/StoryViewer";
+import { StoryCreator } from "@/components/StoryCreator";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, RefreshCw } from "lucide-react";
 import { processPostContent } from "@/lib/hashtags";
 import { toggleBookmark } from "@/lib/bookmarks";
+import { getStoriesGroupedByAuthor, StoryGroup } from "@/lib/stories";
+import { useStoryNavigation } from "@/hooks/useStoryNavigation";
 import { toast } from "sonner";
 
 interface User {
@@ -41,8 +46,21 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
+  const [isStoryCreatorOpen, setIsStoryCreatorOpen] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  // Story navigation hook
+  const {
+    isViewerOpen,
+    currentStories,
+    currentStoryIndex,
+    openStoryViewer,
+    closeStoryViewer,
+    goToNextStory,
+    goToPreviousStory,
+  } = useStoryNavigation({ storyGroups });
 
   useEffect(() => {
     const getUser = async () => {
@@ -135,11 +153,36 @@ export default function FeedPage() {
     }
   }, [user, supabase]);
 
+  const fetchStories = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const stories = await getStoriesGroupedByAuthor(user.id);
+      setStoryGroups(stories);
+    } catch (error) {
+      console.error("Error fetching stories:", error);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       fetchPosts();
+      fetchStories();
     }
-  }, [user, fetchPosts]);
+  }, [user, fetchPosts, fetchStories]);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleStoryClick = (authorId: string, storyGroup: StoryGroup) => {
+    openStoryViewer(authorId);
+  };
+
+  const handleAddStoryClick = () => {
+    setIsStoryCreatorOpen(true);
+  };
+
+  const handleStoryCreated = () => {
+    fetchStories(); // Refresh stories after creating
+  };
 
   const handleCreatePost = async (content: string, imageUrl?: string) => {
     if (!user) return;
@@ -240,6 +283,7 @@ export default function FeedPage() {
   const handleRefresh = () => {
     setRefreshing(true);
     fetchPosts();
+    fetchStories();
   };
 
   if (!user) {
@@ -259,6 +303,13 @@ export default function FeedPage() {
 
       <main className="container mx-auto px-4 py-6 max-w-2xl">
         <div className="space-y-6">
+          {/* Stories Row */}
+          <StoriesRow
+            currentUserId={user.id}
+            onStoryClick={handleStoryClick}
+            onAddStoryClick={handleAddStoryClick}
+          />
+
           {/* Create Post */}
           <CreatePost user={user} onPost={handleCreatePost} />
 
@@ -311,6 +362,24 @@ export default function FeedPage() {
           )}
         </div>
       </main>
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        stories={currentStories}
+        currentStoryIndex={currentStoryIndex}
+        isOpen={isViewerOpen}
+        onClose={closeStoryViewer}
+        onNext={goToNextStory}
+        onPrevious={goToPreviousStory}
+        currentUserId={user.id}
+      />
+
+      {/* Story Creator Modal */}
+      <StoryCreator
+        isOpen={isStoryCreatorOpen}
+        onClose={() => setIsStoryCreatorOpen(false)}
+        onStoryCreated={handleStoryCreated}
+      />
     </div>
   );
 }
