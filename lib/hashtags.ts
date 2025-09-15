@@ -255,3 +255,24 @@ export async function getPostsByHashtag(hashtagName: string, limit = 20) {
       .filter((post) => post !== null) || []
   );
 }
+
+/**
+ * Repair hashtag post counts by recalculating from actual post_hashtags relationships
+ */
+export async function repairHashtagCounts() {
+  const supabase = createClient();
+
+  try {
+    const { error } = await supabase.rpc("repair_hashtag_counts");
+
+    if (error) {
+      console.error("Error repairing hashtag counts:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error in repairHashtagCounts:", error);
+    return { success: false, error: "Failed to repair hashtag counts" };
+  }
+}

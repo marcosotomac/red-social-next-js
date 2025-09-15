@@ -328,25 +328,48 @@ export async function markStoryAsViewed(
   storyId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    console.log("Marking story as viewed:", { storyId });
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.log("User not authenticated");
       return { success: false, error: "User not authenticated" };
     }
 
-    // Use upsert to avoid duplicate view entries
-    const { error } = await supabase
-      .from("story_views")
-      .upsert(
-        { story_id: storyId, viewer_id: user.id },
-        { onConflict: "story_id,viewer_id" }
-      );
+    console.log("User authenticated:", { userId: user.id });
 
-    if (error) {
-      console.error("Error marking story as viewed:", error);
-      return { success: false, error: error.message };
+    // Check if view already exists (without .single() to avoid errors)
+    const { data: existingViews, error: selectError } = await supabase
+      .from("story_views")
+      .select("id")
+      .eq("story_id", storyId)
+      .eq("viewer_id", user.id);
+
+    if (selectError) {
+      console.error("Error checking existing view:", selectError);
+      return { success: false, error: selectError.message };
+    }
+
+    console.log("Existing views found:", existingViews?.length || 0);
+
+    // Only insert if no view exists
+    if (!existingViews || existingViews.length === 0) {
+      console.log("Inserting new view...");
+      const { error: insertError } = await supabase
+        .from("story_views")
+        .insert({ story_id: storyId, viewer_id: user.id });
+
+      if (insertError) {
+        console.log("Error inserting story view:", insertError);
+        return { success: false, error: insertError.message };
+      }
+
+      console.log("Story view inserted successfully");
+    } else {
+      console.log("Story already viewed, skipping insert");
     }
 
     return { success: true };
