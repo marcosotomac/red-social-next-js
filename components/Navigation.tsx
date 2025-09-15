@@ -21,9 +21,11 @@ import {
   LogOut,
   Settings,
   Bookmark,
+  MessageCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 
 interface NavigationProps {
   user?: {
@@ -38,6 +40,7 @@ export function Navigation({ user }: NavigationProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const { totalUnreadCount } = useMessageNotifications();
   const notifications = 3; // Mock notification count
 
   const handleSignOut = async () => {
@@ -48,6 +51,12 @@ export function Navigation({ user }: NavigationProps) {
   const navItems = [
     { href: "/feed", icon: Home, label: "Home", count: 0 },
     { href: "/search", icon: Search, label: "Discover", count: 0 },
+    {
+      href: "/messages",
+      icon: MessageCircle,
+      label: "Messages",
+      count: totalUnreadCount,
+    },
     {
       href: "/notifications",
       icon: Bell,
