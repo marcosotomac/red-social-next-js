@@ -49,7 +49,7 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
   const remainingChars = 500 - content.length;
 
   return (
-    <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-lg rounded-2xl overflow-hidden">
+    <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-lg rounded-2xl overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-center space-x-3">
           <Avatar className="h-10 w-10 ring-2 ring-pink-100">
@@ -59,10 +59,10 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold text-gray-900 leading-none">
+            <p className="font-semibold text-gray-900 dark:text-gray-100 leading-none">
               {user.full_name || user.username}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Share what&apos;s on your mind
             </p>
           </div>
@@ -74,7 +74,7 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
           placeholder="What's happening in your gentle world? ✨"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="min-h-24 border-0 bg-gray-50 resize-none focus:bg-white transition-colors placeholder:text-gray-400"
+          className="min-h-24 border-0 bg-gray-50 dark:bg-gray-700 resize-none focus:bg-white dark:focus:bg-gray-600 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500"
           maxLength={500}
         />
 
@@ -91,7 +91,7 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
 
         {/* Character Counter */}
         <div className="flex justify-between items-center text-sm">
-          <div className="flex items-center space-x-4 text-gray-500">
+          <div className="flex items-center space-x-4 text-gray-500 dark:text-gray-400">
             <Button
               variant="ghost"
               size="sm"

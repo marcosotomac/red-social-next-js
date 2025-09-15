@@ -22,6 +22,7 @@ import {
   Settings,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavigationProps {
   user?: {
@@ -65,7 +66,7 @@ export function Navigation({ user }: NavigationProps) {
     "U";
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 border-b border-gray-200 shadow-sm">
+        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -94,12 +95,12 @@ export function Navigation({ user }: NavigationProps) {
                     size="sm"
                     className={`relative flex items-center space-x-2 h-10 px-4 transition-all duration-200 ${
                       isActive
-                        ? "bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600 shadow-sm"
-                        : "hover:bg-gray-50 text-gray-600 hover:text-pink-600"
+                        ? "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-pink-600 dark:text-pink-400 shadow-sm"
+                        : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400"
                     }`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${isActive ? "text-pink-600" : ""}`}
+                      className={`h-4 w-4 ${isActive ? "text-pink-600 dark:text-pink-400" : ""}`}
                     />
                     <span className="font-medium">{item.label}</span>
                     {item.count > 0 && (
@@ -118,7 +119,9 @@ export function Navigation({ user }: NavigationProps) {
 
           {/* User Menu */}
           {user ? (
-            <DropdownMenu>
+            <div className="flex items-center space-x-2">
+              <ThemeToggle />
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
@@ -134,14 +137,14 @@ export function Navigation({ user }: NavigationProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-56 mt-2 bg-white/95 backdrop-blur-lg border-gray-200 shadow-xl"
+                className="w-56 mt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-gray-200 dark:border-gray-700 shadow-xl"
               >
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {user.full_name || user.username}
                     </p>
-                    <p className="text-xs text-gray-500">@{user.username}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">@{user.username}</p>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
@@ -173,8 +176,10 @@ export function Navigation({ user }: NavigationProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           ) : (
             <div className="flex items-center space-x-2">
+              <ThemeToggle />
               <Button variant="ghost" asChild>
                 <Link href="/login">Sign in</Link>
               </Button>
@@ -190,7 +195,7 @@ export function Navigation({ user }: NavigationProps) {
 
         {/* Mobile Navigation */}
         {user && (
-          <div className="md:hidden mt-3 flex items-center justify-around border-t border-gray-100 pt-3">
+          <div className="md:hidden mt-3 flex items-center justify-around border-t border-gray-100 dark:border-gray-700 pt-3">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -202,12 +207,12 @@ export function Navigation({ user }: NavigationProps) {
                     size="sm"
                     className={`relative flex flex-col items-center space-y-1 h-12 w-16 p-0 transition-all duration-200 ${
                       isActive
-                        ? "bg-gradient-to-b from-pink-50 to-purple-50 text-pink-600"
-                        : "text-gray-500 hover:text-pink-600"
+                        ? "bg-gradient-to-b from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-pink-600 dark:text-pink-400"
+                        : "text-gray-500 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400"
                     }`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${isActive ? "text-pink-600" : ""}`}
+                      className={`h-4 w-4 ${isActive ? "text-pink-600 dark:text-pink-400" : ""}`}
                     />
                     <span className="text-xs font-medium">{item.label}</span>
                     {item.count > 0 && (

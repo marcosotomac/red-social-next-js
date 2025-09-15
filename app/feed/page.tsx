@@ -191,17 +191,17 @@ export default function FeedPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-6 w-6 animate-spin text-pink-600" />
-          <span className="text-gray-600">Loading...</span>
+          <span className="text-gray-600 dark:text-gray-300">Loading...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navigation user={user} />
 
       <main className="container mx-auto px-4 py-6 max-w-2xl">
@@ -215,7 +215,7 @@ export default function FeedPage() {
               variant="outline"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="border-gray-200 hover:border-pink-300 hover:bg-pink-50"
+              className="border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
             >
               <RefreshCw
                 className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
@@ -231,13 +231,13 @@ export default function FeedPage() {
             </div>
           ) : posts.length === 0 ? (
             <div className="text-center py-12 space-y-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mx-auto flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
                 <span className="text-4xl">🌸</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800">
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                 Your feed is peaceful
               </h3>
-              <p className="text-gray-600 max-w-md mx-auto">
+              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                 Start following people to see their posts here, or create your
                 first post to share with the community.
               </p>
