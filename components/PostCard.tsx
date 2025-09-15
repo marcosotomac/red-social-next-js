@@ -16,6 +16,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { ParsedText } from "@/components/ParsedText";
+import { ImageModal } from "@/components/ImageModal";
 
 interface PostCardProps {
   post: {
@@ -51,6 +52,7 @@ export function PostCard({
   );
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [commentsCount, setCommentsCount] = useState(post.comments_count);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   // Sync bookmark state when post prop changes
   useEffect(() => {
@@ -121,13 +123,34 @@ export function PostCard({
 
           {/* Post Image */}
           {post.image_url && (
-            <div className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video max-h-96">
+            <div
+              className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video max-h-96 cursor-pointer transition-transform duration-200 hover:scale-[1.02] group"
+              onClick={() => setImageModalOpen(true)}
+            >
               <Image
                 src={post.image_url}
                 alt="Post content"
                 fill
-                className="object-cover"
+                className="object-cover transition-opacity duration-200 group-hover:opacity-90"
               />
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white/20 backdrop-blur-sm rounded-full p-3 transform scale-90 group-hover:scale-100">
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           )}
 
@@ -217,6 +240,17 @@ export function PostCard({
           />
         </div>
       </CardContent>
+
+      {/* Image Modal */}
+      {post.image_url && (
+        <ImageModal
+          src={post.image_url}
+          alt="Post content"
+          isOpen={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          authorName={post.author.full_name || post.author.username}
+        />
+      )}
     </Card>
   );
 }

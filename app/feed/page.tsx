@@ -126,7 +126,6 @@ export default function FeedPage() {
       );
 
       setPosts(formattedPosts);
-      console.log("Posts loaded with bookmark status:", formattedPosts.map(p => ({ id: p.id, bookmarked: p.user_has_bookmarked })));
     } catch (error) {
       console.error("Error fetching posts:", error);
       toast.error("Error cargando los posts");
@@ -215,9 +214,7 @@ export default function FeedPage() {
     if (!user) return;
 
     try {
-      console.log("🔖 Attempting to bookmark post:", postId);
       const newBookmarkState = await toggleBookmark(postId, user.id);
-      console.log("🔖 Bookmark operation result:", newBookmarkState);
 
       // Update local state immediately for better UX
       setPosts((prevPosts) =>
@@ -234,8 +231,6 @@ export default function FeedPage() {
       toast.success(
         newBookmarkState ? "Post bookmarked!" : "Bookmark removed!"
       );
-      
-      console.log("🔖 Posts state updated, bookmark status:", newBookmarkState);
     } catch (error) {
       console.error("Error toggling bookmark:", error);
       toast.error("Failed to toggle bookmark");

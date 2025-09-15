@@ -77,7 +77,7 @@ export default function BookmarksPage() {
 
     try {
       setLoading(true);
-      
+
       // Use the optimized function from lib/bookmarks.ts
       const { getUserBookmarks } = await import("@/lib/bookmarks");
       const bookmarksData = await getUserBookmarks(user.id);

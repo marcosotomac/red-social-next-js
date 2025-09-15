@@ -7,8 +7,6 @@ export async function toggleBookmark(
   currentUserId: string
 ): Promise<boolean> {
   try {
-    console.log("🔖 toggleBookmark called with:", { postId, currentUserId });
-    
     // Check if bookmark already exists
     const { data: existingBookmark, error: checkError } = await supabase
       .from("bookmarks")
@@ -17,8 +15,6 @@ export async function toggleBookmark(
       .eq("user_id", currentUserId)
       .single();
 
-    console.log("🔖 Existing bookmark check:", { existingBookmark, checkError });
-
     if (checkError && checkError.code !== "PGRST116") {
       // PGRST116 is "not found" which is expected if no bookmark exists
       console.error("Error checking bookmark:", checkError);
@@ -26,7 +22,6 @@ export async function toggleBookmark(
     }
 
     if (existingBookmark) {
-      console.log("🔖 Removing existing bookmark");
       // Remove bookmark
       const { error: deleteError } = await supabase
         .from("bookmarks")
@@ -39,10 +34,8 @@ export async function toggleBookmark(
         throw deleteError;
       }
 
-      console.log("🔖 Bookmark removed successfully");
       return false; // Not bookmarked anymore
     } else {
-      console.log("🔖 Adding new bookmark");
       // Add bookmark
       const { error: insertError } = await supabase.from("bookmarks").insert({
         post_id: postId,
@@ -54,7 +47,6 @@ export async function toggleBookmark(
         throw insertError;
       }
 
-      console.log("🔖 Bookmark added successfully");
       return true; // Now bookmarked
     }
   } catch (error) {
@@ -65,8 +57,6 @@ export async function toggleBookmark(
 
 export async function getUserBookmarks(userId: string) {
   try {
-    console.log("📚 Getting bookmarks for user:", userId);
-    
     const { data, error } = await supabase
       .from("bookmarks")
       .select(
@@ -91,16 +81,12 @@ export async function getUserBookmarks(userId: string) {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    console.log("📚 Raw bookmarks data:", { data, error });
-
     if (error) {
       console.error("Error fetching bookmarks:", error);
       throw error;
     }
 
     if (!data) return [];
-
-    console.log("📚 Processing", data.length, "bookmarks");
 
     // Get engagement data for each post
     const postsWithEngagement = await Promise.all(
@@ -109,7 +95,7 @@ export async function getUserBookmarks(userId: string) {
         const post = (bookmark as any).posts;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const author = (post as any).profiles;
-        
+
         // Get likes count and user like status
         const { count: likesCount } = await supabase
           .from("likes")
@@ -149,12 +135,10 @@ export async function getUserBookmarks(userId: string) {
           },
         };
 
-        console.log("📚 Processed bookmark:", processedBookmark.post.id);
         return processedBookmark;
       })
     );
 
-    console.log("📚 Returning", postsWithEngagement.length, "processed bookmarks");
     return postsWithEngagement;
   } catch (error) {
     console.error("Error getting user bookmarks:", error);
