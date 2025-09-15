@@ -2,7 +2,7 @@
 
 export interface ParsedContent {
   segments: Array<{
-    type: 'text' | 'hashtag' | 'mention';
+    type: "text" | "hashtag" | "mention";
     content: string;
     value?: string; // The actual hashtag/username without # or @
   }>;
@@ -14,7 +14,7 @@ export interface ParsedContent {
  * Parse text content to extract hashtags and mentions
  */
 export function parseContent(text: string): ParsedContent {
-  const segments: ParsedContent['segments'] = [];
+  const segments: ParsedContent["segments"] = [];
   const hashtags: string[] = [];
   const mentions: string[] = [];
 
@@ -26,7 +26,7 @@ export function parseContent(text: string): ParsedContent {
 
   // Find all hashtags and mentions with their positions
   const matches: Array<{
-    type: 'hashtag' | 'mention';
+    type: "hashtag" | "mention";
     match: string;
     value: string;
     index: number;
@@ -37,7 +37,7 @@ export function parseContent(text: string): ParsedContent {
   // Find hashtags
   while ((match = hashtagRegex.exec(text)) !== null) {
     matches.push({
-      type: 'hashtag',
+      type: "hashtag",
       match: match[0],
       value: match[1],
       index: match.index,
@@ -51,7 +51,7 @@ export function parseContent(text: string): ParsedContent {
   mentionRegex.lastIndex = 0; // Reset regex
   while ((match = mentionRegex.exec(text)) !== null) {
     matches.push({
-      type: 'mention',
+      type: "mention",
       match: match[0],
       value: match[1],
       index: match.index,
@@ -71,7 +71,7 @@ export function parseContent(text: string): ParsedContent {
       const textContent = text.slice(lastIndex, match.index);
       if (textContent) {
         segments.push({
-          type: 'text',
+          type: "text",
           content: textContent,
         });
       }
@@ -92,7 +92,7 @@ export function parseContent(text: string): ParsedContent {
     const remainingText = text.slice(lastIndex);
     if (remainingText) {
       segments.push({
-        type: 'text',
+        type: "text",
         content: remainingText,
       });
     }
@@ -101,7 +101,7 @@ export function parseContent(text: string): ParsedContent {
   // If no matches, add the entire text as a segment
   if (segments.length === 0 && text) {
     segments.push({
-      type: 'text',
+      type: "text",
       content: text,
     });
   }
@@ -117,14 +117,22 @@ export function parseContent(text: string): ParsedContent {
  * Validate hashtag name
  */
 export function isValidHashtag(hashtag: string): boolean {
-  return /^[a-zA-Z0-9_]+$/.test(hashtag) && hashtag.length >= 1 && hashtag.length <= 50;
+  return (
+    /^[a-zA-Z0-9_]+$/.test(hashtag) &&
+    hashtag.length >= 1 &&
+    hashtag.length <= 50
+  );
 }
 
 /**
  * Validate username for mentions
  */
 export function isValidUsername(username: string): boolean {
-  return /^[a-zA-Z0-9_]+$/.test(username) && username.length >= 3 && username.length <= 25;
+  return (
+    /^[a-zA-Z0-9_]+$/.test(username) &&
+    username.length >= 3 &&
+    username.length <= 25
+  );
 }
 
 /**

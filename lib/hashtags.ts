@@ -10,7 +10,7 @@ export async function processPostContent(
   authorId: string
 ) {
   const supabase = createClient();
-  
+
   try {
     // Extract hashtags and mentions
     const hashtags = extractHashtags(content);
@@ -75,13 +75,11 @@ export async function processPostContent(
 
       if (mentionedUser) {
         // Create mention record
-        const { error: mentionError } = await supabase
-          .from("mentions")
-          .insert({
-            post_id: postId,
-            mentioned_user_id: mentionedUser.id,
-            mentioning_user_id: authorId,
-          });
+        const { error: mentionError } = await supabase.from("mentions").insert({
+          post_id: postId,
+          mentioned_user_id: mentionedUser.id,
+          mentioning_user_id: authorId,
+        });
 
         if (mentionError && mentionError.code !== "23505") {
           // Ignore unique constraint violations (already mentioned)
@@ -90,7 +88,9 @@ export async function processPostContent(
       }
     }
 
-    console.log(`Processed ${hashtags.length} hashtags and ${mentions.length} mentions for post ${postId}`);
+    console.log(
+      `Processed ${hashtags.length} hashtags and ${mentions.length} mentions for post ${postId}`
+    );
   } catch (error) {
     console.error("Error processing post content:", error);
   }
@@ -101,16 +101,18 @@ export async function processPostContent(
  */
 export async function getPostHashtags(postId: string) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from("post_hashtags")
-    .select(`
+    .select(
+      `
       hashtag_id,
       hashtags (
         name,
         post_count
       )
-    `)
+    `
+    )
     .eq("post_id", postId);
 
   if (error) {
@@ -118,7 +120,7 @@ export async function getPostHashtags(postId: string) {
     return [];
   }
 
-  return data?.map(item => item.hashtags) || [];
+  return data?.map((item) => item.hashtags) || [];
 }
 
 /**
@@ -126,17 +128,19 @@ export async function getPostHashtags(postId: string) {
  */
 export async function getPostMentions(postId: string) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from("mentions")
-    .select(`
+    .select(
+      `
       mentioned_user_id,
       profiles!mentions_mentioned_user_id_fkey (
         username,
         full_name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq("post_id", postId);
 
   if (error) {
@@ -144,7 +148,7 @@ export async function getPostMentions(postId: string) {
     return [];
   }
 
-  return data?.map(item => item.profiles) || [];
+  return data?.map((item) => item.profiles) || [];
 }
 
 /**
@@ -152,7 +156,7 @@ export async function getPostMentions(postId: string) {
  */
 export async function searchHashtags(query: string, limit = 10) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from("hashtags")
     .select("name, post_count")
@@ -173,7 +177,7 @@ export async function searchHashtags(query: string, limit = 10) {
  */
 export async function getTrendingHashtags(limit = 10) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from("hashtags")
     .select("name, post_count")
@@ -194,7 +198,7 @@ export async function getTrendingHashtags(limit = 10) {
  */
 export async function getPostsByHashtag(hashtagName: string, limit = 20) {
   const supabase = createClient();
-  
+
   // First get the hashtag ID
   const { data: hashtagData, error: hashtagError } = await supabase
     .from("hashtags")
@@ -209,7 +213,8 @@ export async function getPostsByHashtag(hashtagName: string, limit = 20) {
 
   const { data, error } = await supabase
     .from("post_hashtags")
-    .select(`
+    .select(
+      `
       posts (
         id,
         content,
@@ -221,7 +226,8 @@ export async function getPostsByHashtag(hashtagName: string, limit = 20) {
           avatar_url
         )
       )
-    `)
+    `
+    )
     .eq("hashtag_id", hashtagData.id)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -232,16 +238,20 @@ export async function getPostsByHashtag(hashtagName: string, limit = 20) {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return data?.map((item: { posts: any }) => {
-    const post = item.posts;
-    if (!post) return null;
-    
-    return {
-      id: post.id,
-      content: post.content,
-      image_url: post.image_url,
-      created_at: post.created_at,
-      author: post.profiles
-    };
-  }).filter(post => post !== null) || [];
+  return (
+    data
+      ?.map((item: { posts: any }) => {
+        const post = item.posts;
+        if (!post) return null;
+
+        return {
+          id: post.id,
+          content: post.content,
+          image_url: post.image_url,
+          created_at: post.created_at,
+          author: post.profiles,
+        };
+      })
+      .filter((post) => post !== null) || []
+  );
 }

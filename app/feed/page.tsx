@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, RefreshCw } from "lucide-react";
 import { processPostContent } from "@/lib/hashtags";
+import { toggleBookmark } from "@/lib/bookmarks";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -31,6 +33,7 @@ interface Post {
   likes_count: number;
   comments_count: number;
   user_has_liked: boolean;
+  user_has_bookmarked: boolean;
 }
 
 export default function FeedPage() {
@@ -73,14 +76,24 @@ export default function FeedPage() {
   }, [router, supabase]);
 
   const fetchPosts = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
-      const { data, error } = await supabase.rpc("get_posts_with_stats", {
-        user_id_param: user?.id,
+      const { data, error } = await supabase.rpc("get_posts_with_engagement", {
+        user_id_param: user.id,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        setPosts([]);
+        return;
+      }
 
       const formattedPosts: Post[] = data.map(
         (post: {
@@ -94,6 +107,7 @@ export default function FeedPage() {
           likes_count: number;
           comments_count: number;
           user_has_liked: boolean;
+          user_has_bookmarked: boolean;
         }) => ({
           id: post.id,
           content: post.content,
@@ -107,12 +121,15 @@ export default function FeedPage() {
           likes_count: post.likes_count,
           comments_count: post.comments_count,
           user_has_liked: post.user_has_liked,
+          user_has_bookmarked: post.user_has_bookmarked || false,
         })
       );
 
       setPosts(formattedPosts);
+      console.log("Posts loaded with bookmark status:", formattedPosts.map(p => ({ id: p.id, bookmarked: p.user_has_bookmarked })));
     } catch (error) {
       console.error("Error fetching posts:", error);
+      toast.error("Error cargando los posts");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -194,6 +211,37 @@ export default function FeedPage() {
     }
   };
 
+  const handleBookmark = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      console.log("🔖 Attempting to bookmark post:", postId);
+      const newBookmarkState = await toggleBookmark(postId, user.id);
+      console.log("🔖 Bookmark operation result:", newBookmarkState);
+
+      // Update local state immediately for better UX
+      setPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p.id === postId
+            ? {
+                ...p,
+                user_has_bookmarked: newBookmarkState,
+              }
+            : p
+        )
+      );
+
+      toast.success(
+        newBookmarkState ? "Post bookmarked!" : "Bookmark removed!"
+      );
+      
+      console.log("🔖 Posts state updated, bookmark status:", newBookmarkState);
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      toast.error("Failed to toggle bookmark");
+    }
+  };
+
   const handleRefresh = () => {
     setRefreshing(true);
     fetchPosts();
@@ -260,6 +308,7 @@ export default function FeedPage() {
                     post={post}
                     currentUserId={user.id}
                     onLike={handleLike}
+                    onBookmark={handleBookmark}
                   />
                 </div>
               ))}

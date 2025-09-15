@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Comments } from "@/components/Comments";
-import { Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  MoreHorizontal,
+  Bookmark,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { ParsedText } from "@/components/ParsedText";
@@ -25,21 +31,41 @@ interface PostCardProps {
     likes_count: number;
     comments_count: number;
     user_has_liked: boolean;
+    user_has_bookmarked?: boolean;
   };
   currentUserId?: string;
   onLike?: (postId: string) => void;
+  onBookmark?: (postId: string) => void;
 }
 
-export function PostCard({ post, currentUserId, onLike }: PostCardProps) {
+export function PostCard({
+  post,
+  currentUserId,
+  onLike,
+  onBookmark,
+}: PostCardProps) {
   const [isLiked, setIsLiked] = useState(post.user_has_liked);
   const [likesCount, setLikesCount] = useState(post.likes_count);
+  const [isBookmarked, setIsBookmarked] = useState(
+    post.user_has_bookmarked || false
+  );
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [commentsCount, setCommentsCount] = useState(post.comments_count);
+
+  // Sync bookmark state when post prop changes
+  useEffect(() => {
+    setIsBookmarked(post.user_has_bookmarked || false);
+  }, [post.user_has_bookmarked]);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
     onLike?.(post.id);
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    onBookmark?.(post.id);
   };
 
   const handleCommentToggle = () => {
@@ -151,16 +177,35 @@ export function PostCard({ post, currentUserId, onLike }: PostCardProps) {
               </Button>
             </div>
 
-            {/* Engagement Badge */}
-            {likesCount > 0 && (
-              <Badge
-                variant="secondary"
-                className="bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800 text-xs"
-              >
-                {likesCount === 1 ? "1 like" : `${likesCount} likes`}
-              </Badge>
-            )}
+            {/* Bookmark Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBookmark}
+              className={`h-8 w-8 p-0 transition-all duration-200 ${
+                isBookmarked
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                  : "text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
+              title={isBookmarked ? "Remove bookmark" : "Bookmark post"}
+            >
+              <Bookmark
+                className={`h-4 w-4 transition-all duration-200 ${
+                  isBookmarked ? "fill-purple-600 dark:fill-purple-400" : ""
+                }`}
+              />
+            </Button>
           </div>
+
+          {/* Engagement Badge */}
+          {likesCount > 0 && (
+            <Badge
+              variant="secondary"
+              className="bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800 text-xs"
+            >
+              {likesCount === 1 ? "1 like" : `${likesCount} likes`}
+            </Badge>
+          )}
 
           {/* Comments Section */}
           <Comments

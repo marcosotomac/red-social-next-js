@@ -20,6 +20,7 @@ import {
   Bell,
   LogOut,
   Settings,
+  Bookmark,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -53,6 +54,7 @@ export function Navigation({ user }: NavigationProps) {
       label: "Notifications",
       count: notifications,
     },
+    { href: "/bookmarks", icon: Bookmark, label: "Bookmarks", count: 0 },
     { href: "/likes", icon: Heart, label: "Liked Posts", count: 0 },
   ];
 

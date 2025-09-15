@@ -96,7 +96,7 @@ export default function HashtagPage() {
 
         // Get posts
         const hashtagPosts = await getPostsByHashtag(hashtag.toLowerCase());
-        
+
         // Add engagement data for each post
         const postsWithEngagement = await Promise.all(
           hashtagPosts.map(async (post) => {
@@ -184,8 +184,8 @@ export default function HashtagPage() {
               </div>
               {hashtagInfo && (
                 <Badge variant="secondary" className="mx-auto">
-                  {hashtagInfo.post_count === 1 
-                    ? "1 post" 
+                  {hashtagInfo.post_count === 1
+                    ? "1 post"
                     : `${hashtagInfo.post_count} posts`}
                 </Badge>
               )}
@@ -214,11 +214,7 @@ export default function HashtagPage() {
           ) : (
             <div className="space-y-6">
               {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUserId={user.id}
-                />
+                <PostCard key={post.id} post={post} currentUserId={user.id} />
               ))}
             </div>
           )}
