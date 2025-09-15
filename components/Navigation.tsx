@@ -66,7 +66,7 @@ export function Navigation({ user }: NavigationProps) {
     "U";
 
   return (
-        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -100,7 +100,9 @@ export function Navigation({ user }: NavigationProps) {
                     }`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${isActive ? "text-pink-600 dark:text-pink-400" : ""}`}
+                      className={`h-4 w-4 ${
+                        isActive ? "text-pink-600 dark:text-pink-400" : ""
+                      }`}
                     />
                     <span className="font-medium">{item.label}</span>
                     {item.count > 0 && (
@@ -122,60 +124,62 @@ export function Navigation({ user }: NavigationProps) {
             <div className="flex items-center space-x-2">
               <ThemeToggle />
               <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-10 w-10 rounded-full ring-2 ring-pink-100 hover:ring-pink-200 transition-all duration-200"
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full ring-2 ring-pink-100 hover:ring-pink-200 transition-all duration-200"
+                  >
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user.avatar_url} />
+                      <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold text-sm">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 mt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-gray-200 dark:border-gray-700 shadow-xl"
                 >
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={user.avatar_url} />
-                    <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold text-sm">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-56 mt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-gray-200 dark:border-gray-700 shadow-xl"
-              >
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {user.full_name || user.username}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">@{user.username}</p>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {user.full_name || user.username}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        @{user.username}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={`/profile/${user.username}`}
-                    className="flex items-center cursor-pointer"
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/profile/${user.username}`}
+                      className="flex items-center cursor-pointer"
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/settings"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="text-red-600 cursor-pointer"
                   >
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/settings"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-red-600 cursor-pointer"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           ) : (
             <div className="flex items-center space-x-2">
@@ -212,7 +216,9 @@ export function Navigation({ user }: NavigationProps) {
                     }`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${isActive ? "text-pink-600 dark:text-pink-400" : ""}`}
+                      className={`h-4 w-4 ${
+                        isActive ? "text-pink-600 dark:text-pink-400" : ""
+                      }`}
                     />
                     <span className="text-xs font-medium">{item.label}</span>
                     {item.count > 0 && (

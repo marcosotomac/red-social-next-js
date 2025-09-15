@@ -9,6 +9,7 @@ import { CreatePost } from "@/components/CreatePost";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, RefreshCw } from "lucide-react";
+import { processPostContent } from "@/lib/hashtags";
 
 interface User {
   id: string;
@@ -128,13 +129,22 @@ export default function FeedPage() {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from("posts").insert({
-        author_id: user.id,
-        content,
-        image_url: imageUrl,
-      });
+      const { data: newPost, error } = await supabase
+        .from("posts")
+        .insert({
+          author_id: user.id,
+          content,
+          image_url: imageUrl,
+        })
+        .select("id")
+        .single();
 
       if (error) throw error;
+
+      // Process hashtags and mentions in the background
+      if (newPost) {
+        processPostContent(newPost.id, content, user.id);
+      }
 
       // Refresh posts
       await fetchPosts();

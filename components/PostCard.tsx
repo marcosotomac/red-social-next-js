@@ -9,6 +9,7 @@ import { Comments } from "@/components/Comments";
 import { Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
+import { ParsedText } from "@/components/ParsedText";
 
 interface PostCardProps {
   post: {
@@ -88,9 +89,9 @@ export function PostCard({ post, currentUserId, onLike }: PostCardProps) {
       <CardContent className="pb-4">
         <div className="space-y-4">
           {/* Post Content */}
-          <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-            {post.content}
-          </p>
+          <div className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+            <ParsedText content={post.content} />
+          </div>
 
           {/* Post Image */}
           {post.image_url && (

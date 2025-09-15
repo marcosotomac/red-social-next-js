@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ParsedText } from "@/components/ParsedText";
 
 interface Comment {
   id: string;
@@ -379,9 +380,9 @@ export function Comments({
                               </DropdownMenu>
                             )}
                           </div>
-                          <p className="text-gray-800 leading-relaxed">
-                            {comment.content}
-                          </p>
+                          <div className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                            <ParsedText content={comment.content} />
+                          </div>
                           <div className="flex items-center space-x-4">
                             <Button
                               variant="ghost"

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Users, Hash, TrendingUp, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { searchHashtags, getTrendingHashtags } from "@/lib/hashtags";
 
 interface User {
   id: string;
@@ -28,14 +29,20 @@ interface SearchUser {
 }
 
 interface TrendingTag {
-  tag: string;
-  count: number;
+  name: string;
+  post_count: number;
+}
+
+interface HashtagResult {
+  name: string;
+  post_count: number;
 }
 
 export default function SearchPage() {
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
+  const [hashtagResults, setHashtagResults] = useState<HashtagResult[]>([]);
   const [trendingTags, setTrendingTags] = useState<TrendingTag[]>([]);
   const [suggestedUsers, setSuggestedUsers] = useState<SearchUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,15 +84,8 @@ export default function SearchPage() {
   useEffect(() => {
     const loadTrendingTags = async () => {
       try {
-        // Simulate trending tags - in a real app, you'd extract hashtags from posts
-        const mockTrending = [
-          { tag: "#softsocial", count: 245 },
-          { tag: "#mindfulness", count: 189 },
-          { tag: "#creativity", count: 156 },
-          { tag: "#community", count: 134 },
-          { tag: "#wellness", count: 98 },
-        ];
-        setTrendingTags(mockTrending);
+        const trendingHashtags = await getTrendingHashtags(5);
+        setTrendingTags(trendingHashtags);
       } catch (error) {
         console.error("Error loading trending tags:", error);
       }
@@ -140,6 +140,7 @@ export default function SearchPage() {
 
       setSearching(true);
       try {
+        // Search users
         const { data: users } = await supabase
           .from("profiles")
           .select("id, username, full_name, avatar_url")
@@ -148,6 +149,10 @@ export default function SearchPage() {
           )
           .neq("id", user.id)
           .limit(10);
+
+        // Search hashtags
+        const hashtags = await searchHashtags(searchQuery, 10);
+        setHashtagResults(hashtags);
 
         if (users) {
           // Get follower and post counts for search results
@@ -158,7 +163,7 @@ export default function SearchPage() {
                   .from("follows")
                   .select("id")
                   .eq("following_id", profile.id),
-                supabase.from("posts").select("id").eq("user_id", profile.id),
+                supabase.from("posts").select("id").eq("author_id", profile.id),
               ]);
 
               return {
@@ -172,7 +177,7 @@ export default function SearchPage() {
           setSearchResults(usersWithStats);
         }
       } catch (error) {
-        console.error("Error searching users:", error);
+        console.error("Error searching:", error);
       } finally {
         setSearching(false);
       }
@@ -183,6 +188,7 @@ export default function SearchPage() {
         performSearch();
       } else {
         setSearchResults([]);
+        setHashtagResults([]);
       }
     }, 300);
 
@@ -325,27 +331,77 @@ export default function SearchPage() {
 
           {/* Search Results */}
           {searchQuery.trim() && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                <Users className="h-5 w-5 mr-2" />
-                Search Results
-              </h2>
-              {searchResults.length === 0 && !searching ? (
-                <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-sm">
-                  <CardContent className="p-8 text-center">
-                    <Search className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">
-                      No users found for &ldquo;{searchQuery}&rdquo;
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-3">
-                  {searchResults.map((searchUser) => (
-                    <UserCard key={searchUser.id} user={searchUser} />
-                  ))}
-                </div>
-              )}
+            <div className="space-y-6">
+              {/* User Results */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                  <Users className="h-5 w-5 mr-2" />
+                  People
+                </h2>
+                {searchResults.length === 0 && !searching ? (
+                  <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
+                    <CardContent className="p-8 text-center">
+                      <Search className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No users found for &ldquo;{searchQuery}&rdquo;
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {searchResults.map((searchUser) => (
+                      <UserCard key={searchUser.id} user={searchUser} />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Hashtag Results */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                  <Hash className="h-5 w-5 mr-2" />
+                  Hashtags
+                </h2>
+                {hashtagResults.length === 0 && !searching ? (
+                  <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
+                    <CardContent className="p-8 text-center">
+                      <Hash className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No hashtags found for &ldquo;{searchQuery}&rdquo;
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {hashtagResults.map((hashtag) => (
+                      <Link
+                        key={hashtag.name}
+                        href={`/hashtag/${encodeURIComponent(hashtag.name)}`}
+                      >
+                        <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                                  <Hash className="h-5 w-5 text-white" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                                    #{hashtag.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {hashtag.post_count} posts
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -360,25 +416,26 @@ export default function SearchPage() {
                 <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-sm">
                   <CardContent className="p-4 space-y-3">
                     {trendingTags.map((tag, index) => (
-                      <div
-                        key={tag.tag}
-                        className="flex items-center justify-between py-2"
+                      <Link
+                        key={tag.name}
+                        href={`/hashtag/${encodeURIComponent(tag.name)}`}
+                        className="flex items-center justify-between py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-2 transition-colors"
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
                             {index + 1}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">
-                              {tag.tag}
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                              #{tag.name}
                             </p>
-                            <p className="text-sm text-gray-500">
-                              {tag.count} posts
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {tag.post_count} posts
                             </p>
                           </div>
                         </div>
-                        <Hash className="h-4 w-4 text-gray-400" />
-                      </div>
+                        <Hash className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      </Link>
                     ))}
                   </CardContent>
                 </Card>
