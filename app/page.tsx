@@ -40,9 +40,9 @@ export default function HomePage() {
             >
               🚀 The smarter way to connect
             </Badge>
-            <h2 className="text-5xl md:text-6xl font-bold leading-tight">
+            <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-center hero-title">
               Social media that{" "}
-              <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent hero-title-gradient">
                 works for you
               </span>
             </h2>

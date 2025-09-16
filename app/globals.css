@@ -120,3 +120,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom styles for homepage title visibility */
+.hero-title {
+  line-height: 1.2 !important;
+  word-spacing: 0.1em;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+.hero-title-gradient {
+  display: inline-block;
+  word-break: keep-all;
+}
