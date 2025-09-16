@@ -328,66 +328,66 @@ export default function FeedPage() {
       <main className="w-full px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         <div className="max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto">
           <div className="space-y-4 sm:space-y-6">
-          {/* Stories Row */}
-          <StoriesRow
-            currentUserId={user.id}
-            onStoryClick={handleStoryClick}
-            onAddStoryClick={handleAddStoryClick}
-          />
+            {/* Stories Row */}
+            <StoriesRow
+              currentUserId={user.id}
+              onStoryClick={handleStoryClick}
+              onAddStoryClick={handleAddStoryClick}
+            />
 
-          {/* Create Post */}
-          <CreatePost user={user} onPost={handleCreatePost} />
+            {/* Create Post */}
+            <CreatePost user={user} onPost={handleCreatePost} />
 
-          {/* Refresh Button */}
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
-            >
-              <RefreshCw
-                className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
-              />
-              {refreshing ? "Refreshing..." : "Refresh feed"}
-            </Button>
-          </div>
-
-          {/* Posts */}
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-pink-600" />
+            {/* Refresh Button */}
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
+                />
+                {refreshing ? "Refreshing..." : "Refresh feed"}
+              </Button>
             </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-12 space-y-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
-                <span className="text-4xl">🌸</span>
+
+            {/* Posts */}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-pink-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                Your feed is peaceful
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                Start following people to see their posts here, or create your
-                first post to share with the community.
-              </p>
-            </div>
-          ) : (
-            <ScrollArea className="space-y-4 sm:space-y-6">
-              {posts.map((post) => (
-                <div key={post.id} className="mb-4 sm:mb-6">
-                  <PostCard
-                    post={post}
-                    currentUserId={user.id}
-                    onLike={handleLike}
-                    onBookmark={handleBookmark}
-                    onPostUpdate={handlePostUpdate}
-                    onPostDelete={handlePostDelete}
-                  />
+            ) : posts.length === 0 ? (
+              <div className="text-center py-12 space-y-4">
+                <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
+                  <span className="text-4xl">🌸</span>
                 </div>
-              ))}
-            </ScrollArea>
-          )}
-        </div>
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                  Your feed is peaceful
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                  Start following people to see their posts here, or create your
+                  first post to share with the community.
+                </p>
+              </div>
+            ) : (
+              <ScrollArea className="space-y-4 sm:space-y-6">
+                {posts.map((post) => (
+                  <div key={post.id} className="mb-4 sm:mb-6">
+                    <PostCard
+                      post={post}
+                      currentUserId={user.id}
+                      onLike={handleLike}
+                      onBookmark={handleBookmark}
+                      onPostUpdate={handlePostUpdate}
+                      onPostDelete={handlePostDelete}
+                    />
+                  </div>
+                ))}
+              </ScrollArea>
+            )}
+          </div>
         </div>
       </main>
 

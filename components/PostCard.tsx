@@ -235,7 +235,9 @@ export function PostCard({
                   {commentsCount}
                 </span>
                 {commentsOpen && (
-                  <span className="text-xs text-blue-500 font-medium">• Thread</span>
+                  <span className="text-xs text-blue-500 font-medium">
+                    • Thread
+                  </span>
                 )}
               </Button>
 
@@ -267,8 +269,6 @@ export function PostCard({
               />
             </Button>
           </div>
-
-          
 
           {/* Comments Section */}
           <Comments

@@ -66,8 +66,6 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
       .join("")
       .toUpperCase() || user.username[0].toUpperCase();
 
-  const remainingChars = 500 - content.length;
-
   return (
     <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-lg rounded-2xl overflow-hidden">
       <CardHeader className="pb-3">
@@ -109,8 +107,8 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
           />
         )}
 
-        {/* Character Counter */}
-        <div className="flex justify-between items-center text-sm">
+        {/* Actions and Post Button */}
+        <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4 text-gray-500 dark:text-gray-400">
             <Button
               variant="ghost"
@@ -151,27 +149,13 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
             </Button>
           </div>
 
-          <span
-            className={`text-sm ${
-              remainingChars < 50
-                ? "text-orange-500"
-                : remainingChars < 20
-                ? "text-red-500"
-                : "text-gray-400"
-            }`}
-          >
-            {remainingChars}
-          </span>
-        </div>
-
-        {/* Post Button */}
-        <div className="flex justify-end pt-2 border-t border-gray-100">
           <Button
             onClick={handleSubmit}
             disabled={!content.trim() || isPosting}
+            size="sm"
             className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none disabled:opacity-50"
           >
-            {isPosting ? "Sharing..." : "Share with kindness"}
+            {isPosting ? "Sharing..." : "Share"}
           </Button>
         </div>
       </CardContent>
