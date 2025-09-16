@@ -62,7 +62,7 @@ export default function SignupPage() {
             <span className="text-white font-bold text-2xl">S</span>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Softsocial
+            QuéFue
           </h1>
           <p className="text-gray-600 text-sm">
             Connect with friends in a gentle way

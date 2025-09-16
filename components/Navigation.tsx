@@ -82,7 +82,7 @@ export function Navigation({ user }: NavigationProps) {
               <span className="text-white font-bold text-sm">S</span>
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              Softsocial
+              QuéFue
             </h1>
           </Link>
 
