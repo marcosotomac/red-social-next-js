@@ -534,7 +534,7 @@ export function StoryViewer({
             src={currentStory.media_url}
             className="w-full h-full object-contain"
             autoPlay
-            muted
+            controls={false}
             onLoadedData={handleImageLoad}
             onEnded={onNext}
           />
