@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <div className="h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center flex-shrink-0">
+      <header className="container mx-auto px-4 py-4 sm:py-6 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
             <Image
@@ -53,22 +53,22 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 container mx-auto px-4 flex flex-col justify-center items-center text-center relative z-20">
-        <div className="space-y-8 max-w-4xl relative z-20">
-          <div className="space-y-6">
+      <main className="flex-1 container mx-auto px-4 flex flex-col justify-center items-center text-center relative z-20 min-h-0">
+        <div className="space-y-6 sm:space-y-8 max-w-4xl relative z-20 w-full">
+          <div className="space-y-4 sm:space-y-6">
             <Badge
               variant="secondary"
               className="bg-purple-100 text-purple-900 border-purple-200 font-semibold"
             >
               🚀 The smarter way to connect
             </Badge>
-            <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-center hero-title text-gray-900">
+            <h2 className="text-4xl sm:text-5xl md:text-4xl lg:text-5xl font-bold text-center hero-title text-gray-900">
               Social media that{" "}
               <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent hero-title-gradient">
                 works for you
               </span>
             </h2>
-            <div className="text-xl text-gray-800 max-w-2xl mx-auto leading-relaxed min-h-[3.5rem] flex items-center justify-center">
+            <div className="text-lg sm:text-xl text-gray-800 max-w-2xl mx-auto leading-relaxed min-h-[2.5rem] sm:min-h-[3.5rem] flex items-center justify-center">
               <TypingText
                 texts={[
                   { text: "Connect with friends and family", icon: "Users" },
@@ -86,16 +86,16 @@ export default function HomePage() {
                 typeSpeed={80}
                 deleteSpeed={40}
                 pauseTime={2000}
-                className="text-xl text-gray-800 font-medium"
+                className="text-lg sm:text-xl text-gray-800 font-medium"
               />
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button
               size="lg"
               onClick={handleSignup}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4 w-full sm:w-auto btn-enhanced"
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto btn-enhanced"
             >
               Join SocialApp
             </Button>
@@ -103,7 +103,7 @@ export default function HomePage() {
               size="lg"
               variant="outline"
               onClick={handleLogin}
-              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4 w-full sm:w-auto btn-enhanced font-semibold"
+              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto btn-enhanced font-semibold"
             >
               Sign In
             </Button>
@@ -112,8 +112,8 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="container mx-auto px-4 py-6 flex justify-center items-center flex-shrink-0 relative z-10">
-        <p className="text-gray-700 text-sm font-semibold footer-text">
+      <footer className="container mx-auto px-4 py-3 sm:py-6 flex justify-center items-center flex-shrink-0 relative z-10">
+        <p className="text-gray-700 text-xs sm:text-sm font-semibold footer-text">
           Made by Marco Soto ❤️
         </p>
       </footer>
