@@ -304,169 +304,209 @@ export function Comments({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 sm:space-y-4">
       {/* Comments toggle button */}
       <Button
         variant="ghost"
         size="sm"
         onClick={onToggle}
-        className="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition-colors"
+        className={`flex items-center space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
+          isOpen
+            ? "text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+            : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+        }`}
       >
-        <MessageCircle className="h-4 w-4" />
-        <span>
-          {commentsCount} {commentsCount === 1 ? "comment" : "comments"}
-        </span>
+        <div className="relative">
+          <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+          {isOpen && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          )}
+        </div>
+        <span className="text-xs sm:text-sm font-medium">{commentsCount}</span>
+        {isOpen && (
+          <span className="text-xs text-blue-500 font-medium">• Thread</span>
+        )}
       </Button>
 
       {/* Comments section */}
       {isOpen && (
-        <div className="space-y-3 sm:space-y-4 border-t border-gray-100 pt-3 sm:pt-4">
-          {/* New comment form */}
-          {currentUserId && (
-            <div className="flex space-x-2 sm:space-x-3">
-              <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-sm">
-                  U
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-2 min-w-0">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Write a comment..."
-                  className="min-h-[70px] sm:min-h-[80px] resize-none border-gray-200 focus:border-pink-300 focus:ring-pink-200 text-sm sm:text-base"
-                />
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleSubmitComment}
-                    disabled={!newComment.trim() || submitting}
-                    size="sm"
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs sm:text-sm px-3 sm:px-4"
-                  >
-                    <Send className="h-3 w-3 mr-1" />
-                    {submitting ? "Posting..." : "Post"}
-                  </Button>
+        <div className="relative bg-gradient-to-br from-blue-50/50 to-indigo-50/30 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-xl p-3 sm:p-4 border border-blue-100/50 dark:border-blue-800/30 backdrop-blur-sm">
+          {/* Thread connector line */}
+          <div className="absolute left-6 sm:left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-indigo-200 to-transparent dark:from-blue-700 dark:via-indigo-700 opacity-60"></div>
+
+          <div className="space-y-3 sm:space-y-4">
+            {/* New comment form */}
+            {currentUserId && (
+              <div className="relative flex space-x-2 sm:space-x-3 ml-4 sm:ml-6">
+                {/* Thread indicator */}
+                <div className="absolute -left-4 sm:-left-6 top-2 w-3 h-3 border-2 border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
+                  <div className="w-1.5 h-1.5 bg-blue-400 dark:bg-blue-500 rounded-full"></div>
+                </div>
+
+                <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 ring-2 ring-blue-100 dark:ring-blue-800">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-indigo-500 text-white text-xs sm:text-sm font-semibold">
+                    U
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2 min-w-0">
+                  <div className="relative">
+                    <Textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Reply to this thread..."
+                      className="min-h-[70px] sm:min-h-[80px] resize-none border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-600 focus:ring-blue-200 dark:focus:ring-blue-800 text-sm sm:text-base bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl"
+                    />
+                    <MessageCircle className="absolute top-3 right-3 h-4 w-4 text-blue-300 dark:text-blue-600" />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleSubmitComment}
+                      disabled={!newComment.trim() || submitting}
+                      size="sm"
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs sm:text-sm px-3 sm:px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                      <Send className="h-3 w-3 mr-1" />
+                      {submitting ? "Posting..." : "Reply"}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Comments list */}
-          {loading ? (
-            <div className="text-center py-3 sm:py-4 text-gray-500 text-sm">
-              Loading comments...
-            </div>
-          ) : comments.length === 0 ? (
-            <div className="text-center py-6 sm:py-8 text-gray-500">
-              <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm sm:text-base">
-                No comments yet. Be the first to comment!
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3 sm:space-y-4">
-              {comments.map((comment) => {
-                const initials =
-                  comment.user.full_name
-                    ?.split(" ")
-                    .map((name) => name[0])
-                    .join("")
-                    .toUpperCase() || comment.user.username[0].toUpperCase();
+            {/* Comments list */}
+            {loading ? (
+              <div className="text-center py-3 sm:py-4 text-gray-500 dark:text-gray-400 text-sm ml-4 sm:ml-6">
+                Loading comments...
+              </div>
+            ) : comments.length === 0 ? (
+              <div className="text-center py-6 sm:py-8 text-gray-500 dark:text-gray-400 ml-4 sm:ml-6">
+                <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm sm:text-base">
+                  No comments yet. Be the first to comment!
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2 sm:space-y-3">
+                {comments.map((comment) => {
+                  const initials =
+                    comment.user.full_name
+                      ?.split(" ")
+                      .map((name) => name[0])
+                      .join("")
+                      .toUpperCase() || comment.user.username[0].toUpperCase();
 
-                return (
-                  <Card key={comment.id} className="border-gray-100">
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex space-x-2 sm:space-x-3">
-                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                          <AvatarImage src={comment.user.avatar_url} />
-                          <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-sm">
-                            {initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 min-w-0">
-                              <span className="font-medium text-gray-900 text-sm sm:text-base truncate">
-                                {comment.user.full_name ||
-                                  comment.user.username}
-                              </span>
-                              <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-500">
-                                <span className="truncate">
-                                  @{comment.user.username}
-                                </span>
-                                <span className="hidden sm:inline">·</span>
-                                <span className="text-xs">
-                                  {formatDistanceToNow(
-                                    new Date(comment.created_at),
-                                    { addSuffix: true }
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                            {currentUserId === comment.user.id && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                  return (
+                    <div key={comment.id} className="relative ml-4 sm:ml-6">
+                      {/* Thread node indicator */}
+                      <div className="absolute -left-4 sm:-left-6 top-3 w-3 h-3 border-2 border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full"></div>
+                      </div>
+
+                      <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 border-l-4 border-l-indigo-200 dark:border-l-indigo-700 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden">
+                        <CardContent className="p-2 sm:p-3">
+                          <div className="flex space-x-2 sm:space-x-3">
+                            <Avatar className="h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0 ring-2 ring-indigo-100 dark:ring-indigo-800">
+                              <AvatarImage src={comment.user.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-blue-500 text-white text-xs font-semibold">
+                                {initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              {/* Header with name, username, time and actions in one line */}
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <div className="flex items-center space-x-1 min-w-0 flex-1">
+                                  <MessageCircle className="h-3 w-3 text-indigo-400 dark:text-indigo-500 flex-shrink-0" />
+                                  <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">
+                                    {comment.user.full_name ||
+                                      comment.user.username}
+                                  </span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    @{comment.user.username}
+                                  </span>
+                                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                                    •
+                                  </span>
+                                  <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                                    {formatDistanceToNow(
+                                      new Date(comment.created_at),
+                                      { addSuffix: true }
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1 flex-shrink-0">
+                                  {/* Like button moved to the right */}
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 flex-shrink-0"
-                                  >
-                                    <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
                                     onClick={() =>
-                                      handleDeleteComment(comment.id)
+                                      handleLikeComment(
+                                        comment.id,
+                                        comment.is_liked_by_user
+                                      )
                                     }
-                                    className="text-red-600 focus:text-red-600 text-sm"
+                                    className={`flex items-center space-x-1 h-5 sm:h-6 px-1 transition-all duration-200 ${
+                                      comment.is_liked_by_user
+                                        ? "text-pink-600 hover:text-pink-700 bg-pink-50 dark:bg-pink-900/20"
+                                        : "text-gray-500 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                                    }`}
                                   >
-                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            )}
+                                    <Heart
+                                      className={`h-3 w-3 transition-all duration-200 ${
+                                        comment.is_liked_by_user
+                                          ? "fill-current scale-110"
+                                          : ""
+                                      }`}
+                                    />
+                                    {comment.likes_count > 0 && (
+                                      <span className="text-xs font-medium">
+                                        {comment.likes_count}
+                                      </span>
+                                    )}
+                                  </Button>
+                                  {/* Delete menu if owner */}
+                                  {currentUserId === comment.user.id && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-5 w-5 sm:h-6 sm:w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                                        >
+                                          <MoreHorizontal className="h-3 w-3" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent
+                                        align="end"
+                                        className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90"
+                                      >
+                                        <DropdownMenuItem
+                                          onClick={() =>
+                                            handleDeleteComment(comment.id)
+                                          }
+                                          className="text-red-600 focus:text-red-600 text-sm"
+                                        >
+                                          <Trash2 className="h-3 w-3 mr-2" />
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                              </div>
+                              {/* Content */}
+                              <div className="text-gray-800 dark:text-gray-200 leading-relaxed text-xs sm:text-sm break-words">
+                                <ParsedText content={comment.content} />
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-gray-800 dark:text-gray-200 leading-relaxed text-sm sm:text-base break-words">
-                            <ParsedText content={comment.content} />
-                          </div>
-                          <div className="flex items-center space-x-3 sm:space-x-4">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                handleLikeComment(
-                                  comment.id,
-                                  comment.is_liked_by_user
-                                )
-                              }
-                              className={`flex items-center space-x-1 h-6 sm:h-8 px-1 sm:px-2 ${
-                                comment.is_liked_by_user
-                                  ? "text-pink-600 hover:text-pink-700"
-                                  : "text-gray-500 hover:text-pink-600"
-                              }`}
-                            >
-                              <Heart
-                                className={`h-3 w-3 ${
-                                  comment.is_liked_by_user ? "fill-current" : ""
-                                }`}
-                              />
-                              {comment.likes_count > 0 && (
-                                <span className="text-xs">
-                                  {comment.likes_count}
-                                </span>
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
