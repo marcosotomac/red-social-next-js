@@ -350,10 +350,10 @@ export default function SearchPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <Navigation user={undefined} />
         <div className="flex items-center justify-center py-12">
-          <span className="text-gray-600">Loading...</span>
+          <span className="text-gray-600 dark:text-gray-300">Loading...</span>
         </div>
       </div>
     );
@@ -378,35 +378,35 @@ export default function SearchPage() {
     const isLoading = followLoadingStates[searchUser.id] || false;
 
     return (
-      <Card className="w-full backdrop-blur-sm bg-white/80 border-0 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+      <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
         <CardContent className="p-3 sm:p-6 lg:p-8 h-full">
           <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 h-full">
             <Link
               href={`/profile/${searchUser.username}`}
               className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 flex-1 min-w-0"
             >
-              <Avatar className="h-10 w-10 sm:h-16 sm:w-16 lg:h-20 lg:w-20 flex-shrink-0 ring-2 ring-pink-100 lg:ring-4">
+              <Avatar className="h-10 w-10 sm:h-16 sm:w-16 lg:h-20 lg:w-20 flex-shrink-0 ring-2 ring-pink-100 dark:ring-pink-900/50 lg:ring-4">
                 <AvatarImage src={searchUser.avatar_url} />
                 <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-lg lg:text-xl font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-lg lg:text-xl">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate text-sm sm:text-lg lg:text-xl">
                   {searchUser.full_name || searchUser.username}
                 </h3>
-                <p className="text-xs sm:text-base lg:text-lg text-gray-500 truncate">
+                <p className="text-xs sm:text-base lg:text-lg text-gray-500 dark:text-gray-400 truncate">
                   @{searchUser.username}
                 </p>
                 <div className="flex items-center space-x-2 sm:space-x-6 lg:space-x-8 mt-1 sm:mt-2 lg:mt-3">
-                  <span className="text-xs sm:text-sm lg:text-base text-gray-500">
-                    <span className="font-semibold text-gray-700">
+                  <span className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">
                       {searchUser.followers_count}
                     </span>{" "}
                     followers
                   </span>
-                  <span className="text-xs sm:text-sm lg:text-base text-gray-500">
-                    <span className="font-semibold text-gray-700">
+                  <span className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400">
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">
                       {searchUser.posts_count}
                     </span>{" "}
                     posts
@@ -421,13 +421,13 @@ export default function SearchPage() {
                 size="sm"
                 className={`flex-shrink-0 text-xs sm:text-sm lg:text-base px-2 sm:px-4 lg:px-6 py-1 sm:py-2 lg:py-3 font-medium ${
                   isFollowing
-                    ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
                 } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isLoading ? (
                   <>
-                    <div className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                    <div className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-600 border-t-gray-600 dark:border-t-gray-300"></div>
                     <span className="hidden sm:inline">Loading...</span>
                   </>
                 ) : isFollowing ? (
@@ -450,7 +450,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navigation user={user} />
 
       <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-7xl">
@@ -460,19 +460,19 @@ export default function SearchPage() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
               Discover
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400">
               Find new people and explore trending topics
             </p>
 
             {/* Search Bar */}
             <div className="max-w-md lg:max-w-lg mx-auto relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
               <Input
                 type="text"
                 placeholder="Search people..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 border-gray-200 focus:border-pink-300 focus:ring-pink-200"
+                className="pl-10 border-gray-200 dark:border-gray-700 focus:border-pink-300 dark:focus:border-pink-600 focus:ring-pink-200 dark:focus:ring-pink-800 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
               {searching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -494,7 +494,7 @@ export default function SearchPage() {
                 {searchResults.length === 0 && !searching ? (
                   <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
                     <CardContent className="p-6 sm:p-8 text-center">
-                      <Search className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <Search className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                       <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                         No users found for &ldquo;{searchQuery}&rdquo;
                       </p>
@@ -518,7 +518,7 @@ export default function SearchPage() {
                 {hashtagResults.length === 0 && !searching ? (
                   <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
                     <CardContent className="p-6 sm:p-8 text-center">
-                      <Hash className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <Hash className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                       <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                         No hashtags found for &ldquo;{searchQuery}&rdquo;
                       </p>
@@ -562,17 +562,17 @@ export default function SearchPage() {
           {!searchQuery.trim() && (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               <div className="xl:col-span-1 space-y-3 sm:space-y-4">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 flex items-center">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                   <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2" />
                   Trending Topics
                 </h2>
-                <Card className="w-full backdrop-blur-sm bg-white/80 border-0 shadow-sm">
+                <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
                   <CardContent className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
                     {trendingTags.map((tag, index) => (
                       <Link
                         key={tag.name}
                         href={`/hashtag/${encodeURIComponent(tag.name)}`}
-                        className="flex items-center justify-between py-3 lg:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-3 lg:px-4 transition-colors"
+                        className="flex items-center justify-between py-3 lg:py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg px-3 lg:px-4 transition-colors"
                       >
                         <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 min-w-0 flex-1">
                           <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-xs sm:text-sm lg:text-base font-bold flex-shrink-0">
@@ -597,7 +597,7 @@ export default function SearchPage() {
               {/* Suggested Users */}
               <div className="xl:col-span-2 space-y-3 sm:space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 flex items-center">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2" />
                     Suggested for You
                   </h2>
@@ -608,11 +608,11 @@ export default function SearchPage() {
                         size="sm"
                         onClick={loadPreviousUsers}
                         disabled={currentPage === 0 || loadingMoreUsers}
-                        className="px-2 py-1 lg:px-3 lg:py-2"
+                        className="px-2 py-1 lg:px-3 lg:py-2 border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
                       >
                         <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
-                      <span className="text-xs sm:text-sm lg:text-base text-gray-500 min-w-[50px] sm:min-w-[60px] lg:min-w-[80px] text-center">
+                      <span className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400 min-w-[50px] sm:min-w-[60px] lg:min-w-[80px] text-center">
                         Página {currentPage + 1}
                       </span>
                       <Button
@@ -620,7 +620,7 @@ export default function SearchPage() {
                         size="sm"
                         onClick={loadMoreUsers}
                         disabled={!hasMoreUsers || loadingMoreUsers}
-                        className="px-2 py-1 lg:px-3 lg:py-2"
+                        className="px-2 py-1 lg:px-3 lg:py-2 border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
                       >
                         {loadingMoreUsers ? (
                           <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
@@ -645,7 +645,7 @@ export default function SearchPage() {
                 {suggestedUsers.length === 0 && !loadingMoreUsers && (
                   <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
                     <CardContent className="p-6 sm:p-8 text-center">
-                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                       <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                         No hay usuarios sugeridos disponibles
                       </p>
