@@ -99,8 +99,8 @@ export function ChatInput({
   };
 
   return (
-    <div className="p-2 border-t border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
-      <div className="flex items-end gap-2">
+    <div className="p-3 sm:p-4 lg:p-5 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
+      <div className="flex items-end gap-2 sm:gap-3 lg:gap-4">
         {/* File upload button */}
         <Button
           type="button"
@@ -108,9 +108,9 @@ export function ChatInput({
           size="icon"
           onClick={handleFileSelect}
           disabled={disabled || uploading}
-          className="flex-shrink-0 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full h-8 w-8 transition-all duration-200"
+          className="flex-shrink-0 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 transition-all duration-200"
         >
-          <Paperclip className="h-3 w-3 text-gray-600 dark:text-gray-400" />
+          <Paperclip className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-600 dark:text-gray-400" />
         </Button>
 
         {/* Hidden file input */}
@@ -132,12 +132,12 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "min-h-[36px] max-h-[80px] resize-none pr-10 border-0",
-              "bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm",
+              "min-h-[36px] sm:min-h-[44px] lg:min-h-[48px] max-h-[80px] sm:max-h-[120px] lg:max-h-[140px] resize-none pr-10 sm:pr-12 lg:pr-14 border-0",
+              "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm",
               "ring-1 ring-white/30 dark:ring-gray-700/30 rounded-2xl",
               "focus-visible:ring-2 focus-visible:ring-pink-400/50",
               "placeholder:text-gray-500 dark:placeholder:text-gray-400",
-              "text-gray-900 dark:text-gray-100 text-sm"
+              "text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg"
             )}
             rows={1}
           />
@@ -149,20 +149,20 @@ export function ChatInput({
             onClick={handleSend}
             disabled={disabled || !message.trim() || uploading}
             className={cn(
-              "absolute right-1 bottom-1 h-7 w-7 rounded-full",
+              "absolute right-1 sm:right-2 lg:right-3 bottom-1 sm:bottom-2 lg:bottom-3 h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-full",
               "bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600",
               "text-white shadow-lg transition-all duration-200",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >
-            <SendHorizontal className="h-3 w-3" />
+            <SendHorizontal className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
           </Button>
         </div>
       </div>
 
       {uploading && (
-        <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
-          <div className="animate-spin h-3 w-3 border border-pink-400 border-t-transparent rounded-full" />
+        <div className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400 flex items-center gap-2">
+          <div className="animate-spin h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 border border-pink-400 border-t-transparent rounded-full" />
           Subiendo archivo...
         </div>
       )}
