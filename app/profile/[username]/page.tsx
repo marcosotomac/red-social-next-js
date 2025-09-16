@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Navigation } from "@/components/Navigation";
@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { UserPlus, UserCheck, Calendar, Link as LinkIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { getFollowStatus, toggleFollow, subscribeToFollowChanges } from "@/lib/follows";
+import { useThrottle } from "@/hooks/useDebounce";
 
 interface User {
   id: string;
@@ -49,7 +51,9 @@ export default function ProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const followingRef = useRef(false); // Ref to prevent race conditions
   const supabase = createClient();
 
   useEffect(() => {
@@ -94,32 +98,13 @@ export default function ProfilePage() {
 
       setProfileUser(profile);
 
-      // Get followers count
-      const { count: followersCount } = await supabase
-        .from("follows")
-        .select("*", { count: "exact", head: true })
-        .eq("following_id", profile.id);
+      // Get follow status and counts using the new function
+      const followStatus = await getFollowStatus(currentUser?.id || null, profile.id);
 
-      setFollowersCount(followersCount || 0);
-
-      // Get following count
-      const { count: followingCount } = await supabase
-        .from("follows")
-        .select("*", { count: "exact", head: true })
-        .eq("follower_id", profile.id);
-
-      setFollowingCount(followingCount || 0);
-
-      // Check if current user is following this profile
-      if (currentUser && !isOwnProfile) {
-        const { data: followData } = await supabase
-          .from("follows")
-          .select("*")
-          .eq("follower_id", currentUser.id)
-          .eq("following_id", profile.id)
-          .single();
-
-        setIsFollowing(!!followData);
+      if (followStatus) {
+        setFollowersCount(followStatus.followers_count);
+        setFollowingCount(followStatus.following_count);
+        setIsFollowing(followStatus.is_following);
       }
 
       // Get user's posts
@@ -173,34 +158,72 @@ export default function ProfilePage() {
     }
   }, [username, currentUser, isOwnProfile, router, supabase]);
 
+  // Subscribe to real-time follow changes
+  useEffect(() => {
+    if (!profileUser?.id) return;
+
+    const subscription = subscribeToFollowChanges(profileUser.id, () => {
+      // Refresh follow status when changes occur
+      if (currentUser) {
+        getFollowStatus(currentUser.id, profileUser.id).then((status) => {
+          if (status) {
+            setFollowersCount(status.followers_count);
+            setIsFollowing(status.is_following);
+          }
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [profileUser?.id, currentUser]);
+
   const handleFollow = async () => {
-    if (!currentUser || !profileUser || isOwnProfile) return;
+    if (!currentUser || !profileUser || isOwnProfile || isFollowLoading || followingRef.current) return;
+
+    // Set both state and ref to prevent multiple calls
+    setIsFollowLoading(true);
+    followingRef.current = true;
 
     try {
-      if (isFollowing) {
-        // Unfollow
-        await supabase
-          .from("follows")
-          .delete()
-          .eq("follower_id", currentUser.id)
-          .eq("following_id", profileUser.id);
+      console.log("Starting follow action for:", profileUser.username);
+      
+      // Use the new toggle_follow function
+      const result = await toggleFollow(currentUser.id, profileUser.id);
 
-        setIsFollowing(false);
-        setFollowersCount((prev) => prev - 1);
-      } else {
-        // Follow
-        await supabase.from("follows").insert({
-          follower_id: currentUser.id,
-          following_id: profileUser.id,
-        });
+      console.log("Follow result:", result);
 
-        setIsFollowing(true);
-        setFollowersCount((prev) => prev + 1);
+      if (!result) {
+        console.error("Error toggling follow: No result returned");
+        return;
+      }
+
+      if (result.error) {
+        console.error("Follow error:", result.error);
+        return;
+      }
+
+      // Update local state with the response from the database
+      if (result.success) {
+        setIsFollowing(result.is_following);
+        setFollowersCount(result.followers_count);
+        console.log("Follow status updated:", result.is_following, "Followers:", result.followers_count, "Action:", result.action);
+        
+        // Update the ref to match the new state
+        followingRef.current = false;
       }
     } catch (error) {
       console.error("Error toggling follow:", error);
+    } finally {
+      // Reset both state and ref
+      setIsFollowLoading(false);
+      followingRef.current = false;
     }
   };
+
+  // Throttle the follow function to prevent rapid clicks
+  const throttledHandleFollow = useThrottle(handleFollow, 1000);
 
   const handleLike = async (postId: string) => {
     if (!currentUser) return;
@@ -283,14 +306,20 @@ export default function ProfilePage() {
 
                 {!isOwnProfile && (
                   <Button
-                    onClick={handleFollow}
+                    onClick={throttledHandleFollow}
+                    disabled={isFollowLoading}
                     className={`mt-3 ${
                       isFollowing
                         ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
-                    }`}
+                    } ${isFollowLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {isFollowing ? (
+                    {isFollowLoading ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                        Loading...
+                      </>
+                    ) : isFollowing ? (
                       <>
                         <UserCheck className="h-4 w-4 mr-2" />
                         Following
