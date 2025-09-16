@@ -211,7 +211,9 @@ export function PostCard({
                     isLiked ? "fill-pink-600 text-pink-600 scale-110" : ""
                   }`}
                 />
-                <span className="text-xs sm:text-sm font-medium">{likesCount}</span>
+                <span className="text-xs sm:text-sm font-medium">
+                  {likesCount}
+                </span>
               </Button>
 
               <Button

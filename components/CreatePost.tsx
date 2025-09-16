@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
 import { ImageIcon, Smile, MapPin, Calendar, X } from "lucide-react";
+import { useTypingPlaceholder } from "@/hooks/useTypingPlaceholder";
 
 interface CreatePostProps {
   user: {
@@ -22,6 +23,25 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+
+  // Textos con emojis masculinos para el placeholder
+  const placeholderTexts = [
+    { text: "¿Qué aventura has vivido hoy? 🚀" },
+    { text: "Comparte tu momento épico 💪" },
+    { text: "¿Qué te motiva en este momento? 🔥" },
+    { text: "Cuéntanos tu historia bro 👨‍💻" },
+    { text: "¿Qué logro quieres celebrar? 🏆" },
+    { text: "Inspira a la comunidad hermano 🌟" },
+    { text: "¿Qué proyecto estás construyendo? 🛠️" },
+    { text: "Comparte tu sabiduría 🧠" },
+  ];
+
+  const { displayText } = useTypingPlaceholder({
+    texts: placeholderTexts,
+    typeSpeed: 80,
+    deleteSpeed: 40,
+    pauseTime: 3000,
+  });
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
@@ -71,7 +91,7 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
 
       <CardContent className="space-y-4">
         <Textarea
-          placeholder="What's happening in your gentle world? ✨"
+          placeholder={displayText}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-24 border-0 bg-gray-50 dark:bg-gray-700 resize-none focus:bg-white dark:focus:bg-gray-600 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500"

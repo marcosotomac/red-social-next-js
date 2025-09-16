@@ -234,10 +234,10 @@ export function Comments({
       if (error) throw error;
 
       setNewComment("");
-      
+
       // Update comments count
       onCommentsCountChange?.(commentsCount + 1);
-      
+
       await reloadComments();
     } catch (error) {
       console.log("Error posting comment:", error);
@@ -295,7 +295,7 @@ export function Comments({
       if (error) throw error;
 
       setComments((prev) => prev.filter((comment) => comment.id !== commentId));
-      
+
       // Update comments count
       onCommentsCountChange?.(commentsCount - 1);
     } catch (error) {
@@ -359,7 +359,9 @@ export function Comments({
           ) : comments.length === 0 ? (
             <div className="text-center py-6 sm:py-8 text-gray-500">
               <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm sm:text-base">No comments yet. Be the first to comment!</p>
+              <p className="text-sm sm:text-base">
+                No comments yet. Be the first to comment!
+              </p>
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4">
