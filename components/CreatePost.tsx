@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { ImageUpload } from "@/components/ImageUpload";
-import { ImageIcon, Smile, MapPin, Calendar, X, Loader2 } from "lucide-react";
+import {
+  ImageIcon,
+  Smile,
+  MapPin,
+  Calendar as CalendarIcon,
+  X,
+  Loader2,
+} from "lucide-react";
 import { useTypingPlaceholder } from "@/hooks/useTypingPlaceholder";
 import { useGeolocation, type LocationData } from "@/hooks/useGeolocation";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface CreatePostProps {
   user: {
@@ -28,6 +43,10 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Hook para geolocalización
   const {
@@ -57,15 +76,80 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
     pauseTime: 3000,
   });
 
+  // Lista de emojis populares
+  const popularEmojis = [
+    "😀",
+    "😂",
+    "🥰",
+    "😍",
+    "🤩",
+    "😎",
+    "🔥",
+    "💪",
+    "👍",
+    "👏",
+    "🙌",
+    "💯",
+    "🚀",
+    "⭐",
+    "🎉",
+    "🏆",
+    "❤️",
+    "💙",
+    "💚",
+    "💛",
+    "🧡",
+    "💜",
+    "🖤",
+    "🤍",
+    "😊",
+    "😉",
+    "😋",
+    "🤔",
+    "🙃",
+    "😌",
+    "✨",
+    "🌟",
+  ];
+
+  const insertEmoji = (emoji: string) => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newContent = content.slice(0, start) + emoji + content.slice(end);
+      setContent(newContent);
+
+      // Restaurar la posición del cursor después del emoji
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+      }, 0);
+    }
+    setShowEmojiPicker(false);
+  };
+
   const handleSubmit = async () => {
     if (!content.trim()) return;
 
     setIsPosting(true);
     try {
-      await onPost?.(content, imageUrl || undefined, location || undefined);
+      // Formatear el contenido con la fecha si está seleccionada
+      let finalContent = content;
+      if (selectedDate) {
+        const formattedDate = format(selectedDate, "PPP", { locale: es });
+        finalContent += `\n\n📅 Evento: ${formattedDate}`;
+      }
+
+      await onPost?.(
+        finalContent,
+        imageUrl || undefined,
+        location || undefined
+      );
       setContent("");
       setImageUrl(null);
       setShowImageUpload(false);
+      setSelectedDate(undefined);
       clearLocation();
     } catch (error) {
       console.error("Error posting:", error);
@@ -104,6 +188,7 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
 
       <CardContent className="space-y-4">
         <Textarea
+          ref={textareaRef}
           placeholder={displayText}
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -151,6 +236,33 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
           </div>
         )}
 
+        {/* Selected Date Display Section */}
+        {selectedDate && (
+          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CalendarIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <div>
+                  <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                    Evento programado
+                  </p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400">
+                    {format(selectedDate, "PPP", { locale: es })}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedDate(undefined)}
+                className="h-6 w-6 p-0 text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Location Error Display */}
         {locationError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
@@ -182,13 +294,39 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
                 <ImageIcon className="h-4 w-4" />
               )}
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-            >
-              <Smile className="h-4 w-4" />
-            </Button>
+
+            {/* Emoji Picker */}
+            <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 transition-colors ${
+                    showEmojiPicker
+                      ? "bg-yellow-50 text-yellow-600"
+                      : "hover:bg-yellow-50 hover:text-yellow-600"
+                  }`}
+                >
+                  <Smile className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-3" align="start">
+                <div className="grid grid-cols-8 gap-1">
+                  {popularEmojis.map((emoji, index) => (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => insertEmoji(emoji)}
+                    >
+                      {emoji}
+                    </Button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             <Button
               variant="ghost"
               size="sm"
@@ -210,13 +348,37 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
                 <MapPin className="h-4 w-4" />
               )}
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-purple-50 hover:text-purple-600"
-            >
-              <Calendar className="h-4 w-4" />
-            </Button>
+
+            {/* Calendar Picker */}
+            <Popover open={showCalendar} onOpenChange={setShowCalendar}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 transition-colors ${
+                    selectedDate
+                      ? "bg-purple-50 text-purple-600"
+                      : showCalendar
+                      ? "bg-purple-50 text-purple-600"
+                      : "hover:bg-purple-50 hover:text-purple-600"
+                  }`}
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    setSelectedDate(date);
+                    setShowCalendar(false);
+                  }}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <Button

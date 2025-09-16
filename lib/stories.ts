@@ -178,16 +178,18 @@ export async function getStoriesGroupedByAuthor(
 
     // Convert map to array and sort by latest story
     return Array.from(storyGroups.values())
-      .map(group => ({
+      .map((group) => ({
         ...group,
         // Sort stories within each group by created_at ascending (oldest first, newest last)
-        stories: group.stories.sort((a, b) => 
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )
+        stories: group.stories.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        ),
       }))
       .sort(
         (a, b) =>
-          new Date(b.latest_story).getTime() - new Date(a.latest_story).getTime()
+          new Date(b.latest_story).getTime() -
+          new Date(a.latest_story).getTime()
       );
   } catch (error) {
     console.error("Error in getStoriesGroupedByAuthor:", error);

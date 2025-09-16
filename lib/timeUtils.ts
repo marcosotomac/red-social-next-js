@@ -85,3 +85,31 @@ export function formatDateDivider(timestamp: string): string {
 
   return format(date, "EEEE, d MMMM yyyy", { locale: es });
 }
+
+export function formatStoryTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInMilliseconds = now.getTime() - date.getTime();
+  const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+
+  if (diffInMinutes < 1) {
+    return "ahora";
+  }
+
+  if (diffInMinutes < 60) {
+    return `hace ${diffInMinutes}m`;
+  }
+
+  if (diffInHours < 24) {
+    return `hace ${diffInHours}h`;
+  }
+
+  if (diffInHours < 48) {
+    return "ayer";
+  }
+
+  // More than 2 days ago, show days
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `hace ${diffInDays}d`;
+}

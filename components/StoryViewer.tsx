@@ -20,6 +20,7 @@ import {
   saveStoryAsHighlight,
   deleteStory,
 } from "@/lib/stories";
+import { formatStoryTime } from "@/lib/timeUtils";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -403,7 +404,7 @@ export function StoryViewer({
               {currentStory.author.username}
             </p>
             <p className="text-xs text-white/70">
-              {new Date(currentStory.created_at).toLocaleDateString()}
+              {formatStoryTime(currentStory.created_at)}
             </p>
           </div>
         </div>
