@@ -10,10 +10,10 @@ export default function HomePage() {
       <header className="container mx-auto px-4 py-6 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-lg">S</span>
+            <span className="text-white font-bold text-lg">Q</span>
           </div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            SocialApp
+            QuéFue
           </h1>
         </div>
 
