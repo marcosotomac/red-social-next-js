@@ -178,7 +178,16 @@ export function StoryViewer({
       const result = await toggleStoryLike(currentStory.id);
       if (result.success) {
         setIsLiked(result.isLiked);
-        // Optionally show a toast or animation
+        
+        // Update the local story likes count for immediate UI feedback
+        currentStory.likes_count = result.isLiked 
+          ? (currentStory.likes_count || 0) + 1 
+          : Math.max((currentStory.likes_count || 0) - 1, 0);
+        
+        // Show feedback toast
+        if (result.isLiked) {
+          toast.success("¡Te gusta esta historia!");
+        }
       }
     } catch (error) {
       console.error("Error toggling story like:", error);
@@ -554,10 +563,55 @@ export function StoryViewer({
       {/* Stats overlay for own stories */}
       {isOwnStory && (
         <div className="absolute bottom-4 left-4 right-4 z-20">
-          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white">
-            <div className="flex justify-between items-center text-sm">
-              <span>{currentStory.views_count} visualizaciones</span>
-              <span>{currentStory.likes_count} likes</span>
+          <div className="bg-gradient-to-r from-black/70 to-black/50 backdrop-blur-md rounded-2xl p-4 text-white border border-white/10">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <div className="text-center">
+                  <div className="flex items-center space-x-1">
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-lg font-bold">
+                      {currentStory.views_count || 0}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 mt-1">
+                    {currentStory.views_count === 1
+                      ? "visualización"
+                      : "visualizaciones"}
+                  </p>
+                </div>
+
+                <div className="h-8 w-px bg-white/20"></div>
+
+                <div className="text-center">
+                  <div className="flex items-center space-x-1">
+                    <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                    <span className="text-lg font-bold">
+                      {currentStory.likes_count || 0}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 mt-1">
+                    {currentStory.likes_count === 1 ? "like" : "likes"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-xs text-white/70">Tu historia</p>
+                <p className="text-sm font-medium">
+                  {formatStoryTime(currentStory.created_at)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
