@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { getURL } from "@/lib/utils/get-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,6 +37,7 @@ export default function SignupPage() {
         email,
         password,
         options: {
+          emailRedirectTo: getURL(),
           data: {
             username,
             full_name: fullName,
@@ -71,7 +73,7 @@ export default function SignupPage() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             QuéFue
           </h1>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-700 text-sm font-medium">
             Connect with friends in a gentle way
           </p>
         </div>
@@ -81,7 +83,7 @@ export default function SignupPage() {
             <CardTitle className="text-2xl text-center text-gray-800">
               Create account
             </CardTitle>
-            <CardDescription className="text-center text-gray-600">
+            <CardDescription className="text-center text-gray-700 font-medium">
               Join our gentle social community
             </CardDescription>
           </CardHeader>
@@ -94,7 +96,7 @@ export default function SignupPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white/50"
+                  className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white text-gray-900 placeholder:text-gray-500"
                 />
                 <Input
                   type="text"
@@ -102,7 +104,7 @@ export default function SignupPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
-                  className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white/50"
+                  className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white text-gray-900 placeholder:text-gray-500"
                 />
               </div>
 
@@ -112,7 +114,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white/50"
+                className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white text-gray-900 placeholder:text-gray-500"
               />
 
               <Input
@@ -122,7 +124,7 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white/50"
+                className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white text-gray-900 placeholder:text-gray-500"
               />
 
               {error && (
@@ -143,25 +145,23 @@ export default function SignupPage() {
             <div className="relative">
               <Separator className="my-4" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-white px-2 text-xs text-gray-500">or</span>
+                <span className="bg-white px-2 text-xs text-gray-600 font-medium">
+                  or
+                </span>
               </div>
             </div>
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-gray-700 font-medium">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-pink-600 hover:text-pink-700 font-medium hover:underline transition-colors"
+                className="text-pink-600 hover:text-pink-700 font-semibold hover:underline transition-colors"
               >
                 Sign in
               </Link>
             </p>
           </CardContent>
         </Card>
-
-        <p className="text-center text-xs text-gray-500">
-          By creating an account, you agree to our terms and privacy policy
-        </p>
       </div>
     </div>
   );
