@@ -24,7 +24,7 @@ export async function processPostContent(
         .select("id")
         .eq("name", hashtagName)
         .single();
-      
+
       let hashtag = result.data;
       const hashtagError = result.error;
 

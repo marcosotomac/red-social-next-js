@@ -49,6 +49,7 @@ export function PostCard({
 }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(post.user_has_liked);
   const [likesCount, setLikesCount] = useState(post.likes_count);
+  const [commentsCount, setCommentsCount] = useState(post.comments_count);
   const [isBookmarked, setIsBookmarked] = useState(
     post.user_has_bookmarked || false
   );
@@ -74,6 +75,10 @@ export function PostCard({
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
     onBookmark?.(post.id);
+  };
+
+  const handleCommentsCountChange = (newCount: number) => {
+    setCommentsCount(newCount);
   };
 
   const handleCommentToggle = () => {
@@ -105,23 +110,23 @@ export function PostCard({
 
   return (
     <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 px-4 sm:px-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10 ring-2 ring-pink-100">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+            <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-pink-100 flex-shrink-0">
               <AvatarImage src={post.author.avatar_url} />
-              <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold text-sm">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <p className="font-semibold text-gray-900 dark:text-gray-100 leading-none">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-gray-900 dark:text-gray-100 leading-none text-sm sm:text-base truncate">
                 {post.author.full_name || post.author.username}
               </p>
-              <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                <span>@{post.author.username}</span>
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                <span className="truncate">@{post.author.username}</span>
                 <span>•</span>
-                <span>
+                <span className="whitespace-nowrap">
                   {formatDistanceToNow(new Date(post.created_at), {
                     addSuffix: true,
                   })}
@@ -129,7 +134,7 @@ export function PostCard({
                 {isEdited && (
                   <>
                     <span>•</span>
-                    <span className="text-pink-600 dark:text-pink-400">
+                    <span className="text-pink-600 dark:text-pink-400 whitespace-nowrap">
                       editado
                     </span>
                   </>
@@ -137,26 +142,28 @@ export function PostCard({
               </div>
             </div>
           </div>
-          <PostActionsMenu
-            postId={post.id}
-            isOwner={isOwner}
-            onEdit={handleEdit}
-            onDelete={handlePostDelete}
-          />
+          <div className="flex-shrink-0">
+            <PostActionsMenu
+              postId={post.id}
+              isOwner={isOwner}
+              onEdit={handleEdit}
+              onDelete={handlePostDelete}
+            />
+          </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pb-4">
-        <div className="space-y-4">
+      <CardContent className="pb-4 px-4 sm:px-6">
+        <div className="space-y-3 sm:space-y-4">
           {/* Post Content */}
-          <div className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+          <div className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap text-sm sm:text-base break-words">
             <ParsedText content={postContent} />
           </div>
 
           {/* Post Image */}
           {post.image_url && (
             <div
-              className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video max-h-96 cursor-pointer transition-transform duration-200 hover:scale-[1.02] group"
+              className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video max-h-80 sm:max-h-96 cursor-pointer transition-transform duration-200 hover:scale-[1.02] group"
               onClick={() => setImageModalOpen(true)}
             >
               <Image
@@ -167,9 +174,9 @@ export function PostCard({
               />
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white/20 backdrop-blur-sm rounded-full p-3 transform scale-90 group-hover:scale-100">
+                <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3 transform scale-90 group-hover:scale-100">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -188,47 +195,47 @@ export function PostCard({
 
           {/* Engagement Stats */}
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4 sm:space-x-6">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleLike}
-                className={`flex items-center space-x-2 h-8 px-2 transition-all duration-200 ${
+                className={`flex items-center space-x-1 sm:space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
                   isLiked
                     ? "text-pink-600 hover:text-pink-700 bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 dark:hover:bg-pink-900/30"
                     : "text-gray-500 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
                 }`}
               >
                 <Heart
-                  className={`h-4 w-4 transition-all duration-200 ${
+                  className={`h-3 w-3 sm:h-4 sm:w-4 transition-all duration-200 ${
                     isLiked ? "fill-pink-600 text-pink-600 scale-110" : ""
                   }`}
                 />
-                <span className="text-sm font-medium">{likesCount}</span>
+                <span className="text-xs sm:text-sm font-medium">{likesCount}</span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCommentToggle}
-                className={`flex items-center space-x-2 h-8 px-2 transition-all duration-200 ${
+                className={`flex items-center space-x-1 sm:space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
                   commentsOpen
                     ? "text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 }`}
               >
-                <MessageCircle className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  {post.comments_count}
+                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm font-medium">
+                  {commentsCount}
                 </span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center space-x-2 h-8 px-2 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200"
+                className="flex items-center space-x-1 sm:space-x-2 h-7 sm:h-8 px-1 sm:px-2 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
 
@@ -237,7 +244,7 @@ export function PostCard({
               variant="ghost"
               size="sm"
               onClick={handleBookmark}
-              className={`h-8 w-8 p-0 transition-all duration-200 ${
+              className={`h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all duration-200 ${
                 isBookmarked
                   ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30"
                   : "text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
@@ -245,7 +252,7 @@ export function PostCard({
               title={isBookmarked ? "Remove bookmark" : "Bookmark post"}
             >
               <Bookmark
-                className={`h-4 w-4 transition-all duration-200 ${
+                className={`h-3 w-3 sm:h-4 sm:w-4 transition-all duration-200 ${
                   isBookmarked ? "fill-purple-600 dark:fill-purple-400" : ""
                 }`}
               />
@@ -268,7 +275,8 @@ export function PostCard({
             currentUserId={currentUserId}
             isOpen={commentsOpen}
             onToggle={handleCommentToggle}
-            commentsCount={post.comments_count}
+            commentsCount={commentsCount}
+            onCommentsCountChange={handleCommentsCountChange}
           />
         </div>
       </CardContent>

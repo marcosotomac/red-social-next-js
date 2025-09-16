@@ -42,6 +42,7 @@ interface CommentsProps {
   isOpen: boolean;
   onToggle: () => void;
   commentsCount: number;
+  onCommentsCountChange?: (newCount: number) => void;
 }
 
 export function Comments({
@@ -50,6 +51,7 @@ export function Comments({
   isOpen,
   onToggle,
   commentsCount,
+  onCommentsCountChange,
 }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -119,6 +121,41 @@ export function Comments({
 
     if (isOpen) {
       loadComments();
+
+      // Set up real-time subscription for new comments
+      const commentsSubscription = supabase
+        .channel(`comments-${postId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "comments",
+            filter: `post_id=eq.${postId}`,
+          },
+          () => {
+            // Reload comments when a new one is added
+            loadComments();
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "comments",
+            filter: `post_id=eq.${postId}`,
+          },
+          () => {
+            // Reload comments when one is deleted
+            loadComments();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(commentsSubscription);
+      };
     }
   }, [isOpen, postId, currentUserId, supabase]);
 
@@ -197,6 +234,10 @@ export function Comments({
       if (error) throw error;
 
       setNewComment("");
+      
+      // Update comments count
+      onCommentsCountChange?.(commentsCount + 1);
+      
       await reloadComments();
     } catch (error) {
       console.log("Error posting comment:", error);
@@ -254,6 +295,9 @@ export function Comments({
       if (error) throw error;
 
       setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+      
+      // Update comments count
+      onCommentsCountChange?.(commentsCount - 1);
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -276,28 +320,28 @@ export function Comments({
 
       {/* Comments section */}
       {isOpen && (
-        <div className="space-y-4 border-t border-gray-100 pt-4">
+        <div className="space-y-3 sm:space-y-4 border-t border-gray-100 pt-3 sm:pt-4">
           {/* New comment form */}
           {currentUserId && (
-            <div className="flex space-x-3">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-sm">
+            <div className="flex space-x-2 sm:space-x-3">
+              <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-sm">
                   U
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-2 min-w-0">
                 <Textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Write a comment..."
-                  className="min-h-[80px] resize-none border-gray-200 focus:border-pink-300 focus:ring-pink-200"
+                  className="min-h-[70px] sm:min-h-[80px] resize-none border-gray-200 focus:border-pink-300 focus:ring-pink-200 text-sm sm:text-base"
                 />
                 <div className="flex justify-end">
                   <Button
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim() || submitting}
                     size="sm"
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs sm:text-sm px-3 sm:px-4"
                   >
                     <Send className="h-3 w-3 mr-1" />
                     {submitting ? "Posting..." : "Post"}
@@ -309,16 +353,16 @@ export function Comments({
 
           {/* Comments list */}
           {loading ? (
-            <div className="text-center py-4 text-gray-500">
+            <div className="text-center py-3 sm:py-4 text-gray-500 text-sm">
               Loading comments...
             </div>
           ) : comments.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>No comments yet. Be the first to comment!</p>
+            <div className="text-center py-6 sm:py-8 text-gray-500">
+              <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm sm:text-base">No comments yet. Be the first to comment!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {comments.map((comment) => {
                 const initials =
                   comment.user.full_name
@@ -329,31 +373,33 @@ export function Comments({
 
                 return (
                   <Card key={comment.id} className="border-gray-100">
-                    <CardContent className="p-4">
-                      <div className="flex space-x-3">
-                        <Avatar className="h-8 w-8">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex space-x-2 sm:space-x-3">
+                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
                           <AvatarImage src={comment.user.avatar_url} />
-                          <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-sm">
+                          <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-sm">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium text-gray-900">
+                        <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 min-w-0">
+                              <span className="font-medium text-gray-900 text-sm sm:text-base truncate">
                                 {comment.user.full_name ||
                                   comment.user.username}
                               </span>
-                              <span className="text-gray-500">
-                                @{comment.user.username}
-                              </span>
-                              <span className="text-gray-400">·</span>
-                              <span className="text-gray-500 text-sm">
-                                {formatDistanceToNow(
-                                  new Date(comment.created_at),
-                                  { addSuffix: true }
-                                )}
-                              </span>
+                              <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-500">
+                                <span className="truncate">
+                                  @{comment.user.username}
+                                </span>
+                                <span className="hidden sm:inline">·</span>
+                                <span className="text-xs">
+                                  {formatDistanceToNow(
+                                    new Date(comment.created_at),
+                                    { addSuffix: true }
+                                  )}
+                                </span>
+                              </div>
                             </div>
                             {currentUserId === comment.user.id && (
                               <DropdownMenu>
@@ -361,9 +407,9 @@ export function Comments({
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-8 w-8 p-0"
+                                    className="h-6 w-6 sm:h-8 sm:w-8 p-0 flex-shrink-0"
                                   >
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
@@ -371,19 +417,19 @@ export function Comments({
                                     onClick={() =>
                                       handleDeleteComment(comment.id)
                                     }
-                                    className="text-red-600 focus:text-red-600"
+                                    className="text-red-600 focus:text-red-600 text-sm"
                                   >
-                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                                     Delete
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             )}
                           </div>
-                          <div className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                          <div className="text-gray-800 dark:text-gray-200 leading-relaxed text-sm sm:text-base break-words">
                             <ParsedText content={comment.content} />
                           </div>
-                          <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-3 sm:space-x-4">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -393,7 +439,7 @@ export function Comments({
                                   comment.is_liked_by_user
                                 )
                               }
-                              className={`flex items-center space-x-1 h-8 px-2 ${
+                              className={`flex items-center space-x-1 h-6 sm:h-8 px-1 sm:px-2 ${
                                 comment.is_liked_by_user
                                   ? "text-pink-600 hover:text-pink-700"
                                   : "text-gray-500 hover:text-pink-600"
