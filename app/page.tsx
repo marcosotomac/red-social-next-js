@@ -1,30 +1,27 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TypingText } from "@/components/ui/typing-text";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
+      <header className="container mx-auto px-4 py-6 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">S</span>
           </div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Softsocial
+            SocialApp
           </h1>
         </div>
-        <div className="space-x-3">
-          <Button
-            variant="ghost"
-            asChild
-            className="text-gray-600 hover:text-pink-600"
-          >
+        
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" asChild>
             <Link href="/login">Sign in</Link>
           </Button>
-          <Button
+          <Button 
             asChild
             className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg"
           >
@@ -34,120 +31,62 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center space-y-8 max-w-4xl mx-auto">
-          <div className="space-y-4">
+      <main className="flex-1 container mx-auto px-4 flex flex-col justify-center items-center text-center">
+        <div className="space-y-8 max-w-4xl">
+          <div className="space-y-6">
             <Badge
               variant="secondary"
-              className="bg-pink-100 text-pink-700 border-pink-200"
+              className="bg-purple-100 text-purple-800 border-purple-200"
             >
-              ✨ A gentler way to connect
+              🚀 The smarter way to connect
             </Badge>
             <h2 className="text-5xl md:text-6xl font-bold leading-tight">
               Social media that{" "}
               <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                cares about you
+                works for you
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Experience social networking designed with kindness, mindfulness,
-              and genuine connections at its heart.
-            </p>
+            <div className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed min-h-[3.5rem] flex items-center justify-center">
+              <TypingText
+                texts={[
+                  { text: "Connect with friends and family", icon: "Users" },
+                  { text: "Share your thoughts and moments", icon: "Smartphone" }, 
+                  { text: "Discover interesting content daily", icon: "Flame" },
+                  { text: "Join conversations that matter", icon: "MessageCircle" },
+                  { text: "Build your community online", icon: "Star" }
+                ]}
+                typeSpeed={80}
+                deleteSpeed={40}
+                pauseTime={2000}
+                className="text-xl text-gray-600"
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
               asChild
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-xl h-12 px-8 transition-all duration-200 transform hover:scale-105"
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4"
             >
-              <Link href="/signup">Start your journey</Link>
+              <Link href="/signup">Join SocialApp</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-12 px-8 border-gray-300 hover:border-pink-300 hover:bg-pink-50"
+            <Button 
+              size="lg" 
+              variant="outline" 
+              asChild
+              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4"
             >
-              Learn more
+              <Link href="/login">Sign In</Link>
             </Button>
           </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="mt-24 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <Card className="backdrop-blur-sm bg-white/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <CardContent className="p-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-2xl mx-auto flex items-center justify-center">
-                <span className="text-2xl">💝</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800">
-                Mindful Sharing
-              </h3>
-              <p className="text-gray-600">
-                Share moments that matter with thoughtful prompts and gentle
-                reminders to post with intention.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="backdrop-blur-sm bg-white/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <CardContent className="p-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl mx-auto flex items-center justify-center">
-                <span className="text-2xl">🌸</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800">
-                Gentle Interactions
-              </h3>
-              <p className="text-gray-600">
-                Connect through kindness with positive-only reactions and
-                supportive comment experiences.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="backdrop-blur-sm bg-white/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-            <CardContent className="p-8 text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center">
-                <span className="text-2xl">🌱</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-800">
-                Personal Growth
-              </h3>
-              <p className="text-gray-600">
-                Reflect on your connections and digital wellness with insights
-                that help you grow.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* CTA Section */}
-        <div className="mt-24 text-center space-y-6 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-3xl p-12 backdrop-blur-sm">
-          <h3 className="text-3xl font-bold text-gray-800">
-            Ready to experience social media differently?
-          </h3>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Join thousands who have found a more meaningful way to connect
-            online.
-          </p>
-          <Button
-            size="lg"
-            asChild
-            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-xl h-12 px-8"
-          >
-            <Link href="/signup">Join Softsocial today</Link>
-          </Button>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200">
-        <div className="text-center text-gray-500 text-sm">
-          <p>
-            &copy; 2025 Softsocial. Made with 💜 for meaningful connections.
-          </p>
-        </div>
-      </footer>
+      {/* Glassmorphism decorative elements */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+      <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
     </div>
   );
 }
