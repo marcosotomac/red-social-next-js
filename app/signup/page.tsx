@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,8 +59,14 @@ export default function SignupPage() {
       <div className="w-full max-w-md space-y-6">
         {/* Logo/Brand */}
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-2xl">S</span>
+          <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-lg overflow-hidden">
+            <Image 
+              src="/icon.png" 
+              alt="QuéFue Logo" 
+              width={64}
+              height={64}
+              className="w-full h-full object-cover rounded-2xl"
+            />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             QuéFue

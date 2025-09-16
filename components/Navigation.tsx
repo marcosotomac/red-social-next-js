@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -78,8 +79,14 @@ export function Navigation({ user }: NavigationProps) {
             href="/feed"
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-sm">S</span>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+              <Image 
+                src="/icon.png" 
+                alt="QuéFue Logo" 
+                width={32}
+                height={32}
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
               QuéFue
