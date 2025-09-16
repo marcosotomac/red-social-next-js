@@ -120,7 +120,9 @@ export default function MessagesPage() {
               {!selectedConversation ? (
                 <ChatList
                   conversations={conversations}
-                  selectedConversationId={(selectedConversation as Conversation | null)?.id}
+                  selectedConversationId={
+                    (selectedConversation as Conversation | null)?.id
+                  }
                   onSelectConversation={handleSelectConversation}
                   onNewChat={handleNewChat}
                   loading={loading}
@@ -141,7 +143,9 @@ export default function MessagesPage() {
               <div className="w-80 border-r border-white/20 dark:border-gray-700/30 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex-shrink-0">
                 <ChatList
                   conversations={conversations}
-                  selectedConversationId={(selectedConversation as Conversation | null)?.id}
+                  selectedConversationId={
+                    (selectedConversation as Conversation | null)?.id
+                  }
                   onSelectConversation={handleSelectConversation}
                   onNewChat={handleNewChat}
                   loading={loading}

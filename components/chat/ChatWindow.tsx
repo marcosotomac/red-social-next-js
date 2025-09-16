@@ -139,7 +139,10 @@ export function ChatWindow({
   }
 
   return (
-    <div className={`flex flex-col ${className} overflow-hidden`} style={{ height: '100%' }}>
+    <div
+      className={`flex flex-col ${className} overflow-hidden`}
+      style={{ height: "100%" }}
+    >
       {/* Header */}
       <div className="p-3 border-b border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -185,7 +188,10 @@ export function ChatWindow({
       </div>
 
       {/* Messages - Flexible container with contained scroll */}
-      <div className="flex-1 bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm relative overflow-hidden" style={{ minHeight: 0 }}>
+      <div
+        className="flex-1 bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm relative overflow-hidden"
+        style={{ minHeight: 0 }}
+      >
         <ScrollArea className="h-full w-full">
           <div className="p-3 space-y-3 min-h-full">
             {messages.length === 0 ? (

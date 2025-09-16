@@ -39,29 +39,40 @@ export function TypingText({
   useEffect(() => {
     const targetText = texts[currentTextIndex].text;
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        // Typing
-        if (currentText.length < targetText.length) {
-          setCurrentText(targetText.slice(0, currentText.length + 1));
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          // Typing
+          if (currentText.length < targetText.length) {
+            setCurrentText(targetText.slice(0, currentText.length + 1));
+          } else {
+            // Finished typing, wait then start deleting
+            setTimeout(() => setIsDeleting(true), pauseTime);
+          }
         } else {
-          // Finished typing, wait then start deleting
-          setTimeout(() => setIsDeleting(true), pauseTime);
+          // Deleting
+          if (currentText.length > 0) {
+            setCurrentText(currentText.slice(0, -1));
+          } else {
+            // Finished deleting, move to next text
+            setIsDeleting(false);
+            setCurrentTextIndex((prev) => (prev + 1) % texts.length);
+          }
         }
-      } else {
-        // Deleting
-        if (currentText.length > 0) {
-          setCurrentText(currentText.slice(0, -1));
-        } else {
-          // Finished deleting, move to next text
-          setIsDeleting(false);
-          setCurrentTextIndex((prev) => (prev + 1) % texts.length);
-        }
-      }
-    }, isDeleting ? deleteSpeed : typeSpeed);
+      },
+      isDeleting ? deleteSpeed : typeSpeed
+    );
 
     return () => clearTimeout(timeout);
-  }, [currentText, isDeleting, currentTextIndex, texts, typeSpeed, deleteSpeed, pauseTime]);
+  }, [
+    currentText,
+    isDeleting,
+    currentTextIndex,
+    texts,
+    typeSpeed,
+    deleteSpeed,
+    pauseTime,
+  ]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -72,7 +83,8 @@ export function TypingText({
     return () => clearInterval(cursorInterval);
   }, []);
 
-  const CurrentIcon = iconMap[texts[currentTextIndex]?.icon as keyof typeof iconMap];
+  const CurrentIcon =
+    iconMap[texts[currentTextIndex]?.icon as keyof typeof iconMap];
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
@@ -81,7 +93,11 @@ export function TypingText({
       )}
       <span>
         {currentText}
-        <span className={`${showCursor ? "opacity-100" : "opacity-0"} transition-opacity duration-100`}>
+        <span
+          className={`${
+            showCursor ? "opacity-100" : "opacity-0"
+          } transition-opacity duration-100`}
+        >
           |
         </span>
       </span>

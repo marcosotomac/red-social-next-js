@@ -16,12 +16,12 @@ export default function HomePage() {
             SocialApp
           </h1>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <Button variant="ghost" asChild>
             <Link href="/login">Sign in</Link>
           </Button>
-          <Button 
+          <Button
             asChild
             className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg"
           >
@@ -50,10 +50,16 @@ export default function HomePage() {
               <TypingText
                 texts={[
                   { text: "Connect with friends and family", icon: "Users" },
-                  { text: "Share your thoughts and moments", icon: "Smartphone" }, 
+                  {
+                    text: "Share your thoughts and moments",
+                    icon: "Smartphone",
+                  },
                   { text: "Discover interesting content daily", icon: "Flame" },
-                  { text: "Join conversations that matter", icon: "MessageCircle" },
-                  { text: "Build your community online", icon: "Star" }
+                  {
+                    text: "Join conversations that matter",
+                    icon: "MessageCircle",
+                  },
+                  { text: "Build your community online", icon: "Star" },
                 ]}
                 typeSpeed={80}
                 deleteSpeed={40}
@@ -64,16 +70,16 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               asChild
               className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4"
             >
               <Link href="/signup">Join SocialApp</Link>
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               asChild
               className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4"
             >

@@ -19,13 +19,16 @@ export async function processPostContent(
     // Process hashtags
     for (const hashtagName of hashtags) {
       // Get or create hashtag
-      let { data: hashtag, error } = await supabase
+      const result = await supabase
         .from("hashtags")
         .select("id")
         .eq("name", hashtagName)
         .single();
+      
+      let hashtag = result.data;
+      const hashtagError = result.error;
 
-      if (error && error.code === "PGRST116") {
+      if (hashtagError && hashtagError.code === "PGRST116") {
         // Hashtag doesn't exist, create it
         const { data: newHashtag, error: createError } = await supabase
           .from("hashtags")
@@ -38,8 +41,8 @@ export async function processPostContent(
           continue;
         }
         hashtag = newHashtag;
-      } else if (error) {
-        console.error("Error fetching hashtag:", error);
+      } else if (hashtagError) {
+        console.error("Error fetching hashtag:", hashtagError);
         continue;
       }
 
@@ -237,9 +240,10 @@ export async function getPostsByHashtag(hashtagName: string, limit = 20) {
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Note: Using any type here due to complex nested Supabase query structure
   return (
     data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ?.map((item: { posts: any }) => {
         const post = item.posts;
         if (!post) return null;

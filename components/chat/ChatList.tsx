@@ -148,7 +148,7 @@ export function ChatList({
   }
 
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height: '100%' }}>
+    <div className="flex flex-col overflow-hidden" style={{ height: "100%" }}>
       {/* Header */}
       <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -200,66 +200,66 @@ export function ChatList({
                     "w-full h-auto p-4 justify-start rounded-xl transition-all duration-200",
                     "hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-md backdrop-blur-sm",
                     selectedConversationId === conversation.id &&
-                    "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-md border border-pink-200/50 dark:border-pink-700/30"
-                )}
-                onClick={() => onSelectConversation(conversation)}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="relative">
-                    <Avatar className="h-12 w-12 ring-2 ring-white/50 shadow-sm">
-                      <AvatarImage
-                        src={getConversationAvatar(conversation) || undefined}
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-sm font-semibold">
-                        {getConversationInitials(conversation)}
-                      </AvatarFallback>
-                    </Avatar>
+                      "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-md border border-pink-200/50 dark:border-pink-700/30"
+                  )}
+                  onClick={() => onSelectConversation(conversation)}
+                >
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="relative">
+                      <Avatar className="h-12 w-12 ring-2 ring-white/50 shadow-sm">
+                        <AvatarImage
+                          src={getConversationAvatar(conversation) || undefined}
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-sm font-semibold">
+                          {getConversationInitials(conversation)}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    {!conversation.is_group && (
-                      <OnlineIndicator
-                        isOnline={false} // Will be implemented with presence hook
-                        className="absolute -bottom-1 -right-1"
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-medium truncate text-gray-900 dark:text-gray-100">
-                        {getConversationTitle(conversation)}
-                      </h4>
-
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {conversation.last_message && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {formatLastMessageTime(
-                              conversation.last_message.created_at
-                            )}
-                          </span>
-                        )}
-
-                        {conversation.unread_count > 0 && (
-                          <Badge
-                            variant="default"
-                            className="h-5 min-w-[20px] text-xs bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 shadow-lg"
-                          >
-                            {conversation.unread_count > 99
-                              ? "99+"
-                              : conversation.unread_count}
-                          </Badge>
-                        )}
-                      </div>
+                      {!conversation.is_group && (
+                        <OnlineIndicator
+                          isOnline={false} // Will be implemented with presence hook
+                          className="absolute -bottom-1 -right-1"
+                        />
+                      )}
                     </div>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      {getLastMessagePreview(conversation)}
-                    </p>
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="font-medium truncate text-gray-900 dark:text-gray-100">
+                          {getConversationTitle(conversation)}
+                        </h4>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {conversation.last_message && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {formatLastMessageTime(
+                                conversation.last_message.created_at
+                              )}
+                            </span>
+                          )}
+
+                          {conversation.unread_count > 0 && (
+                            <Badge
+                              variant="default"
+                              className="h-5 min-w-[20px] text-xs bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 shadow-lg"
+                            >
+                              {conversation.unread_count > 99
+                                ? "99+"
+                                : conversation.unread_count}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {getLastMessagePreview(conversation)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        )}
+                </Button>
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </div>
     </div>
