@@ -50,9 +50,9 @@ export default function LoginPage() {
         {/* Logo/Brand */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-lg overflow-hidden">
-            <Image 
-              src="/icon.png" 
-              alt="QuéFue Logo" 
+            <Image
+              src="/icon.png"
+              alt="QuéFue Logo"
               width={64}
               height={64}
               className="w-full h-full object-cover rounded-2xl"

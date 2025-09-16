@@ -22,9 +22,9 @@ export default function HomePage() {
       <header className="container mx-auto px-4 py-6 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-            <Image 
-              src="/icon.png" 
-              alt="QuéFue Logo" 
+            <Image
+              src="/icon.png"
+              alt="QuéFue Logo"
               width={40}
               height={40}
               className="w-full h-full object-cover rounded-xl"

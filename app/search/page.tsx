@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Navigation } from "@/components/Navigation";
@@ -15,6 +15,9 @@ import {
   TrendingUp,
   UserPlus,
   UserCheck,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { searchHashtags, getTrendingHashtags } from "@/lib/hashtags";
@@ -55,6 +58,9 @@ export default function SearchPage() {
   const [hashtagResults, setHashtagResults] = useState<HashtagResult[]>([]);
   const [trendingTags, setTrendingTags] = useState<TrendingTag[]>([]);
   const [suggestedUsers, setSuggestedUsers] = useState<SearchUser[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMoreUsers, setHasMoreUsers] = useState(true);
+  const [loadingMoreUsers, setLoadingMoreUsers] = useState(false);
   const [followingStates, setFollowingStates] = useState<
     Record<string, boolean>
   >({});
@@ -65,6 +71,8 @@ export default function SearchPage() {
   const [searching, setSearching] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  const USERS_PER_PAGE = 4; // 2 filas x 2 columnas
 
   useEffect(() => {
     const getUser = async () => {
@@ -97,27 +105,25 @@ export default function SearchPage() {
     getUser();
   }, [router, supabase]);
 
-  useEffect(() => {
-    const loadTrendingTags = async () => {
-      try {
-        const trendingHashtags = await getTrendingHashtags(5);
-        setTrendingTags(trendingHashtags);
-      } catch (error) {
-        console.error("Error loading trending tags:", error);
-      }
-    };
-
-    const loadSuggestedUsers = async () => {
+  // Function to load suggested users
+  const loadSuggestedUsers = useCallback(
+    async (page = 0) => {
       if (!user) return;
 
       try {
+        setLoadingMoreUsers(true);
+
         const { data: users } = await supabase
           .from("profiles")
           .select("id, username, full_name, avatar_url")
           .neq("id", user.id)
-          .limit(5);
+          .order("created_at", { ascending: false })
+          .range(page * USERS_PER_PAGE, (page + 1) * USERS_PER_PAGE - 1);
 
         if (users) {
+          // Check if there are more users to load
+          setHasMoreUsers(users.length === USERS_PER_PAGE);
+
           // Get user IDs for batch stats query
           const userIds = users.map((u: { id: string }) => u.id);
 
@@ -148,6 +154,7 @@ export default function SearchPage() {
             )
           );
 
+          // Always replace users (not append)
           setSuggestedUsers(usersWithStats);
 
           // Initialize follow states
@@ -157,18 +164,51 @@ export default function SearchPage() {
               initialFollowingStates[u.id] = u.is_following || false;
             }
           );
-          setFollowingStates(initialFollowingStates);
+          setFollowingStates((prev) => ({
+            ...prev,
+            ...initialFollowingStates,
+          }));
         }
       } catch (error) {
         console.error("Error loading suggested users:", error);
+      } finally {
+        setLoadingMoreUsers(false);
+      }
+    },
+    [user, supabase]
+  );
+
+  // Function to load more users
+  const loadMoreUsers = async () => {
+    if (!hasMoreUsers || loadingMoreUsers) return;
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    await loadSuggestedUsers(nextPage);
+  };
+
+  // Function to load previous users
+  const loadPreviousUsers = async () => {
+    if (currentPage <= 0 || loadingMoreUsers) return;
+    const prevPage = currentPage - 1;
+    setCurrentPage(prevPage);
+    await loadSuggestedUsers(prevPage);
+  };
+
+  useEffect(() => {
+    const loadTrendingTags = async () => {
+      try {
+        const trendingHashtags = await getTrendingHashtags(5);
+        setTrendingTags(trendingHashtags);
+      } catch (error) {
+        console.error("Error loading trending tags:", error);
       }
     };
 
     if (user) {
       loadTrendingTags();
-      loadSuggestedUsers();
+      loadSuggestedUsers(0);
     }
-  }, [user, supabase]);
+  }, [user, supabase, loadSuggestedUsers]);
 
   useEffect(() => {
     const performSearch = async () => {
@@ -338,32 +378,38 @@ export default function SearchPage() {
     const isLoading = followLoadingStates[searchUser.id] || false;
 
     return (
-      <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-sm hover:shadow-md transition-all duration-200">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+      <Card className="w-full backdrop-blur-sm bg-white/80 border-0 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
+        <CardContent className="p-3 sm:p-6 lg:p-8 h-full">
+          <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 h-full">
             <Link
               href={`/profile/${searchUser.username}`}
-              className="flex items-center space-x-3 flex-1"
+              className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 flex-1 min-w-0"
             >
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-10 w-10 sm:h-16 sm:w-16 lg:h-20 lg:w-20 flex-shrink-0 ring-2 ring-pink-100 lg:ring-4">
                 <AvatarImage src={searchUser.avatar_url} />
-                <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white">
+                <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs sm:text-lg lg:text-xl font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 truncate">
+                <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-lg lg:text-xl">
                   {searchUser.full_name || searchUser.username}
                 </h3>
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-xs sm:text-base lg:text-lg text-gray-500 truncate">
                   @{searchUser.username}
                 </p>
-                <div className="flex items-center space-x-4 mt-1">
-                  <span className="text-xs text-gray-500">
-                    {searchUser.followers_count} followers
+                <div className="flex items-center space-x-2 sm:space-x-6 lg:space-x-8 mt-1 sm:mt-2 lg:mt-3">
+                  <span className="text-xs sm:text-sm lg:text-base text-gray-500">
+                    <span className="font-semibold text-gray-700">
+                      {searchUser.followers_count}
+                    </span>{" "}
+                    followers
                   </span>
-                  <span className="text-xs text-gray-500">
-                    {searchUser.posts_count} posts
+                  <span className="text-xs sm:text-sm lg:text-base text-gray-500">
+                    <span className="font-semibold text-gray-700">
+                      {searchUser.posts_count}
+                    </span>{" "}
+                    posts
                   </span>
                 </div>
               </div>
@@ -373,26 +419,26 @@ export default function SearchPage() {
                 onClick={() => handleFollow(searchUser.id)}
                 disabled={isLoading}
                 size="sm"
-                className={`${
+                className={`flex-shrink-0 text-xs sm:text-sm lg:text-base px-2 sm:px-4 lg:px-6 py-1 sm:py-2 lg:py-3 font-medium ${
                   isFollowing
                     ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+                    : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
                 } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isLoading ? (
                   <>
-                    <div className="h-3 w-3 mr-1 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                    Loading...
+                    <div className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                    <span className="hidden sm:inline">Loading...</span>
                   </>
                 ) : isFollowing ? (
                   <>
-                    <UserCheck className="h-3 w-3 mr-1" />
-                    Following
+                    <UserCheck className="h-3 w-3 lg:h-4 lg:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Following</span>
                   </>
                 ) : (
                   <>
-                    <UserPlus className="h-3 w-3 mr-1" />
-                    Follow
+                    <UserPlus className="h-3 w-3 lg:h-4 lg:w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Follow</span>
                   </>
                 )}
               </Button>
@@ -407,19 +453,19 @@ export default function SearchPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
       <Navigation user={user} />
 
-      <main className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="space-y-6">
+      <main className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-7xl">
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
               Discover
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600">
               Find new people and explore trending topics
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-md mx-auto relative">
+            <div className="max-w-md lg:max-w-lg mx-auto relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
@@ -438,24 +484,24 @@ export default function SearchPage() {
 
           {/* Search Results */}
           {searchQuery.trim() && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* User Results */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
+              <div className="space-y-3 sm:space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   People
                 </h2>
                 {searchResults.length === 0 && !searching ? (
-                  <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
-                    <CardContent className="p-8 text-center">
-                      <Search className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500 dark:text-gray-400">
+                  <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
+                    <CardContent className="p-6 sm:p-8 text-center">
+                      <Search className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                         No users found for &ldquo;{searchQuery}&rdquo;
                       </p>
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {searchResults.map((searchUser) => (
                       <UserCard key={searchUser.id} user={searchUser} />
                     ))}
@@ -464,22 +510,22 @@ export default function SearchPage() {
               </div>
 
               {/* Hashtag Results */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                  <Hash className="h-5 w-5 mr-2" />
+              <div className="space-y-3 sm:space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                  <Hash className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Hashtags
                 </h2>
                 {hashtagResults.length === 0 && !searching ? (
-                  <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
-                    <CardContent className="p-8 text-center">
-                      <Hash className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500 dark:text-gray-400">
+                  <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
+                    <CardContent className="p-6 sm:p-8 text-center">
+                      <Hash className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
                         No hashtags found for &ldquo;{searchQuery}&rdquo;
                       </p>
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {hashtagResults.map((hashtag) => (
                       <Link
                         key={hashtag.name}
@@ -514,34 +560,34 @@ export default function SearchPage() {
 
           {/* Trending Topics */}
           {!searchQuery.trim() && (
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              <div className="xl:col-span-1 space-y-3 sm:space-y-4">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 flex items-center">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2" />
                   Trending Topics
                 </h2>
-                <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-sm">
-                  <CardContent className="p-4 space-y-3">
+                <Card className="w-full backdrop-blur-sm bg-white/80 border-0 shadow-sm">
+                  <CardContent className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
                     {trendingTags.map((tag, index) => (
                       <Link
                         key={tag.name}
                         href={`/hashtag/${encodeURIComponent(tag.name)}`}
-                        className="flex items-center justify-between py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-2 transition-colors"
+                        className="flex items-center justify-between py-3 lg:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg px-3 lg:px-4 transition-colors"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                        <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 min-w-0 flex-1">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-xs sm:text-sm lg:text-base font-bold flex-shrink-0">
                             {index + 1}
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm sm:text-base lg:text-lg">
                               #{tag.name}
                             </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <p className="text-xs sm:text-sm lg:text-base text-gray-500 dark:text-gray-400">
                               {tag.post_count} posts
                             </p>
                           </div>
                         </div>
-                        <Hash className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                        <Hash className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                       </Link>
                     ))}
                   </CardContent>
@@ -549,16 +595,63 @@ export default function SearchPage() {
               </div>
 
               {/* Suggested Users */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
-                  Suggested for You
-                </h2>
-                <div className="space-y-3">
+              <div className="xl:col-span-2 space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 flex items-center">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 mr-2" />
+                    Suggested for You
+                  </h2>
+                  {suggestedUsers.length > 0 && (
+                    <div className="flex items-center justify-center sm:justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadPreviousUsers}
+                        disabled={currentPage === 0 || loadingMoreUsers}
+                        className="px-2 py-1 lg:px-3 lg:py-2"
+                      >
+                        <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <span className="text-xs sm:text-sm lg:text-base text-gray-500 min-w-[50px] sm:min-w-[60px] lg:min-w-[80px] text-center">
+                        Página {currentPage + 1}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadMoreUsers}
+                        disabled={!hasMoreUsers || loadingMoreUsers}
+                        className="px-2 py-1 lg:px-3 lg:py-2"
+                      >
+                        {loadingMoreUsers ? (
+                          <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                        ) : (
+                          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Grid responsive para usuarios sugeridos */}
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
                   {suggestedUsers.map((suggestedUser) => (
-                    <UserCard key={suggestedUser.id} user={suggestedUser} />
+                    <div key={suggestedUser.id} className="w-full">
+                      <UserCard user={suggestedUser} />
+                    </div>
                   ))}
                 </div>
+
+                {/* Mostrar mensaje si no hay usuarios */}
+                {suggestedUsers.length === 0 && !loadingMoreUsers && (
+                  <Card className="w-full backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-sm">
+                    <CardContent className="p-6 sm:p-8 text-center">
+                      <Users className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+                        No hay usuarios sugeridos disponibles
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           )}
