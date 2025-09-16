@@ -6,13 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Comments } from "@/components/Comments";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  MoreHorizontal,
-  Bookmark,
-} from "lucide-react";
+import { PostActionsMenu } from "@/components/PostActionsMenu";
+import { EditPostDialog } from "@/components/EditPostDialog";
+import { Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { ParsedText } from "@/components/ParsedText";
@@ -24,11 +20,13 @@ interface PostCardProps {
     content: string;
     image_url?: string;
     created_at: string;
+    updated_at?: string;
     author: {
       username: string;
       full_name: string;
       avatar_url?: string;
     };
+    author_id?: string;
     likes_count: number;
     comments_count: number;
     user_has_liked: boolean;
@@ -37,6 +35,8 @@ interface PostCardProps {
   currentUserId?: string;
   onLike?: (postId: string) => void;
   onBookmark?: (postId: string) => void;
+  onPostUpdate?: (postId: string, newContent: string) => void;
+  onPostDelete?: (postId: string) => void;
 }
 
 export function PostCard({
@@ -44,6 +44,8 @@ export function PostCard({
   currentUserId,
   onLike,
   onBookmark,
+  onPostUpdate,
+  onPostDelete,
 }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(post.user_has_liked);
   const [likesCount, setLikesCount] = useState(post.likes_count);
@@ -51,8 +53,12 @@ export function PostCard({
     post.user_has_bookmarked || false
   );
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [commentsCount, setCommentsCount] = useState(post.comments_count);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [postContent, setPostContent] = useState(post.content);
+
+  // Check if current user is the author
+  const isOwner = currentUserId === post.author_id;
 
   // Sync bookmark state when post prop changes
   useEffect(() => {
@@ -74,12 +80,28 @@ export function PostCard({
     setCommentsOpen(!commentsOpen);
   };
 
+  const handleEdit = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handlePostUpdate = (newContent: string) => {
+    setPostContent(newContent);
+    onPostUpdate?.(post.id, newContent);
+  };
+
+  const handlePostDelete = () => {
+    onPostDelete?.(post.id);
+  };
+
   const initials =
     post.author.full_name
       ?.split(" ")
       .map((name) => name[0])
       .join("")
       .toUpperCase() || post.author.username[0].toUpperCase();
+
+  // Show edited indicator if post was updated
+  const isEdited = post.updated_at && post.updated_at !== post.created_at;
 
   return (
     <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
@@ -96,21 +118,31 @@ export function PostCard({
               <p className="font-semibold text-gray-900 dark:text-gray-100 leading-none">
                 {post.author.full_name || post.author.username}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                @{post.author.username} •{" "}
-                {formatDistanceToNow(new Date(post.created_at), {
-                  addSuffix: true,
-                })}
-              </p>
+              <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                <span>@{post.author.username}</span>
+                <span>•</span>
+                <span>
+                  {formatDistanceToNow(new Date(post.created_at), {
+                    addSuffix: true,
+                  })}
+                </span>
+                {isEdited && (
+                  <>
+                    <span>•</span>
+                    <span className="text-pink-600 dark:text-pink-400">
+                      editado
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <MoreHorizontal className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-          </Button>
+          <PostActionsMenu
+            postId={post.id}
+            isOwner={isOwner}
+            onEdit={handleEdit}
+            onDelete={handlePostDelete}
+          />
         </div>
       </CardHeader>
 
@@ -118,7 +150,7 @@ export function PostCard({
         <div className="space-y-4">
           {/* Post Content */}
           <div className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-            <ParsedText content={post.content} />
+            <ParsedText content={postContent} />
           </div>
 
           {/* Post Image */}
@@ -251,6 +283,15 @@ export function PostCard({
           authorName={post.author.full_name || post.author.username}
         />
       )}
+
+      {/* Edit Post Dialog */}
+      <EditPostDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        postId={post.id}
+        initialContent={post.content}
+        onUpdate={handlePostUpdate}
+      />
     </Card>
   );
 }

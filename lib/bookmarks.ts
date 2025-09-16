@@ -69,6 +69,7 @@ export async function getUserBookmarks(userId: string) {
           content,
           image_url,
           created_at,
+          updated_at,
           author_id,
           profiles!posts_author_id_fkey (
             username,
@@ -123,6 +124,8 @@ export async function getUserBookmarks(userId: string) {
             content: post.content,
             image_url: post.image_url,
             created_at: post.created_at,
+            updated_at: post.updated_at,
+            author_id: post.author_id,
             author: {
               username: author.username,
               full_name: author.full_name,

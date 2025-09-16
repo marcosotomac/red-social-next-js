@@ -23,6 +23,8 @@ interface Post {
   content: string;
   image_url?: string;
   created_at: string;
+  updated_at?: string;
+  author_id?: string;
   author: {
     username: string;
     full_name: string;
@@ -88,6 +90,8 @@ export default function BookmarksPage() {
         content: bookmark.post.content,
         image_url: bookmark.post.image_url,
         created_at: bookmark.post.created_at,
+        updated_at: bookmark.post.updated_at,
+        author_id: bookmark.post.author_id,
         author: {
           username: bookmark.post.author.username,
           full_name: bookmark.post.author.full_name,
@@ -173,6 +177,24 @@ export default function BookmarksPage() {
     }
   };
 
+  const handlePostUpdate = (postId: string, newContent: string) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              content: newContent,
+              updated_at: new Date().toISOString(),
+            }
+          : p
+      )
+    );
+  };
+
+  const handlePostDelete = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((p) => p.id !== postId));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900/20">
@@ -247,6 +269,8 @@ export default function BookmarksPage() {
                     currentUserId={user?.id}
                     onLike={handleLike}
                     onBookmark={handleBookmark}
+                    onPostUpdate={handlePostUpdate}
+                    onPostDelete={handlePostDelete}
                   />
                 </div>
               ))}

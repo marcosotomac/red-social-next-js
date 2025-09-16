@@ -30,6 +30,8 @@ interface Post {
   content: string;
   image_url?: string;
   created_at: string;
+  updated_at?: string;
+  author_id?: string;
   author: {
     username: string;
     full_name: string;
@@ -119,6 +121,8 @@ export default function FeedPage() {
           content: string;
           image_url?: string;
           created_at: string;
+          updated_at?: string;
+          author_id?: string;
           author_username: string;
           author_full_name: string;
           author_avatar_url?: string;
@@ -131,6 +135,8 @@ export default function FeedPage() {
           content: post.content,
           image_url: post.image_url,
           created_at: post.created_at,
+          updated_at: post.updated_at,
+          author_id: post.author_id,
           author: {
             username: post.author_username,
             full_name: post.author_full_name,
@@ -286,6 +292,24 @@ export default function FeedPage() {
     fetchStories();
   };
 
+  const handlePostUpdate = (postId: string, newContent: string) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              content: newContent,
+              updated_at: new Date().toISOString(),
+            }
+          : p
+      )
+    );
+  };
+
+  const handlePostDelete = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((p) => p.id !== postId));
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
@@ -355,6 +379,8 @@ export default function FeedPage() {
                     currentUserId={user.id}
                     onLike={handleLike}
                     onBookmark={handleBookmark}
+                    onPostUpdate={handlePostUpdate}
+                    onPostDelete={handlePostDelete}
                   />
                 </div>
               ))}
