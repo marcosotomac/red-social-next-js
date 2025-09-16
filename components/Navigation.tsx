@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Home,
   Search,
-  Heart,
   User,
   LogOut,
   Settings,
@@ -58,7 +57,6 @@ export function Navigation({ user }: NavigationProps) {
       count: totalUnreadCount,
     },
     { href: "/bookmarks", icon: Bookmark, label: "Bookmarks", count: 0 },
-    { href: "/likes", icon: Heart, label: "Liked Posts", count: 0 },
   ];
 
   const initials =
@@ -106,7 +104,7 @@ export function Navigation({ user }: NavigationProps) {
                     size="sm"
                     className={`relative flex items-center space-x-2 h-10 px-4 transition-all duration-200 ${
                       isActive
-                        ? "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-pink-600 dark:text-pink-400 shadow-sm"
+                        ? "text-pink-600 dark:text-pink-400"
                         : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400"
                     }`}
                   >
@@ -223,7 +221,7 @@ export function Navigation({ user }: NavigationProps) {
                     size="sm"
                     className={`relative flex flex-col items-center space-y-1 h-12 w-16 p-0 transition-all duration-200 ${
                       isActive
-                        ? "bg-gradient-to-b from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-pink-600 dark:text-pink-400"
+                        ? "text-pink-600 dark:text-pink-400"
                         : "text-gray-500 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400"
                     }`}
                   >

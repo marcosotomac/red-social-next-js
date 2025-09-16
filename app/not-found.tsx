@@ -6,9 +6,7 @@ export default function NotFoundPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center p-4">
       <div className="text-center space-y-6 max-w-md">
         <div className="space-y-4">
-          <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mx-auto flex items-center justify-center">
-            <span className="text-4xl">🌸</span>
-          </div>
+          <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mx-auto flex items-center justify-center"></div>
           <h1 className="text-6xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             404
           </h1>
