@@ -25,7 +25,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { Notification } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 
-export function NotificationDropdown() {
+export function NotificationDropdown({ onClose }: { onClose?: () => void }) {
   const {
     notifications,
     loading,

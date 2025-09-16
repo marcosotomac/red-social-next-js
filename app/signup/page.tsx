@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getURL } from "@/lib/utils/get-url";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Card,
   CardContent,
@@ -117,8 +118,7 @@ export default function SignupPage() {
                 className="h-11 border-gray-200 focus:border-pink-300 focus:ring-pink-200 bg-white text-gray-900 placeholder:text-gray-500"
               />
 
-              <Input
-                type="password"
+              <PasswordInput
                 placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
