@@ -5,11 +5,17 @@ import { createClient } from "@/lib/supabase/client";
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'like_post' | 'like_story' | 'comment' | 'follow' | 'message' | 'mention';
+  type:
+    | "like_post"
+    | "like_story"
+    | "comment"
+    | "follow"
+    | "message"
+    | "mention";
   title: string;
   message: string;
   related_id?: string;
-  related_type?: 'post' | 'story' | 'message' | 'user' | 'comment';
+  related_type?: "post" | "story" | "message" | "user" | "comment";
   actor_id?: string;
   actor?: {
     id: string;
@@ -50,7 +56,9 @@ export async function getUserNotifications(
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -58,7 +66,8 @@ export async function getUserNotifications(
 
     let query = supabase
       .from("notifications")
-      .select(`
+      .select(
+        `
         *,
         actor:profiles!notifications_actor_id_fkey (
           id,
@@ -66,7 +75,8 @@ export async function getUserNotifications(
           full_name,
           avatar_url
         )
-      `)
+      `
+      )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
@@ -85,7 +95,7 @@ export async function getUserNotifications(
     return {
       success: true,
       notifications: notifications as Notification[],
-      total: count || 0
+      total: count || 0,
     };
   } catch (error) {
     console.error("Error in getUserNotifications:", error);
@@ -103,7 +113,9 @@ export async function getNotificationCounts(): Promise<{
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -135,10 +147,10 @@ export async function getNotificationCounts(): Promise<{
       comment: 0,
       follow: 0,
       message: 0,
-      mention: 0
+      mention: 0,
     };
 
-    typeCounts?.forEach(notification => {
+    typeCounts?.forEach((notification) => {
       if (notification.type in byType) {
         byType[notification.type as keyof typeof byType]++;
       }
@@ -149,8 +161,8 @@ export async function getNotificationCounts(): Promise<{
       counts: {
         total: totalCount || 0,
         unread: unreadCount || 0,
-        byType
-      }
+        byType,
+      },
     };
   } catch (error) {
     console.error("Error in getNotificationCounts:", error);
@@ -167,7 +179,9 @@ export async function markNotificationAsRead(notificationId: string): Promise<{
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -175,9 +189,9 @@ export async function markNotificationAsRead(notificationId: string): Promise<{
 
     const { error } = await supabase
       .from("notifications")
-      .update({ 
+      .update({
         is_read: true,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("id", notificationId)
       .eq("user_id", user.id); // Security check
@@ -203,7 +217,9 @@ export async function markAllNotificationsAsRead(): Promise<{
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -211,9 +227,9 @@ export async function markAllNotificationsAsRead(): Promise<{
 
     const { error } = await supabase
       .from("notifications")
-      .update({ 
+      .update({
         is_read: true,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("user_id", user.id)
       .eq("is_read", false);
@@ -226,7 +242,10 @@ export async function markAllNotificationsAsRead(): Promise<{
     return { success: true };
   } catch (error) {
     console.error("Error in markAllNotificationsAsRead:", error);
-    return { success: false, error: "Failed to mark all notifications as read" };
+    return {
+      success: false,
+      error: "Failed to mark all notifications as read",
+    };
   }
 }
 
@@ -239,7 +258,9 @@ export async function deleteNotification(notificationId: string): Promise<{
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -273,14 +294,14 @@ export async function createNotification({
   message,
   relatedId,
   relatedType,
-  actorId
+  actorId,
 }: {
   userId: string;
-  type: Notification['type'];
+  type: Notification["type"];
   title: string;
   message: string;
   relatedId?: string;
-  relatedType?: Notification['related_type'];
+  relatedType?: Notification["related_type"];
   actorId?: string;
 }): Promise<{
   success: boolean;
@@ -299,7 +320,7 @@ export async function createNotification({
         message,
         related_id: relatedId,
         related_type: relatedType,
-        actor_id: actorId
+        actor_id: actorId,
       })
       .select("id")
       .single();
@@ -326,7 +347,9 @@ export async function getNotificationById(notificationId: string): Promise<{
 }> {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return { success: false, error: "User not authenticated" };
@@ -334,7 +357,8 @@ export async function getNotificationById(notificationId: string): Promise<{
 
     const { data: notification, error } = await supabase
       .from("notifications")
-      .select(`
+      .select(
+        `
         *,
         actor:profiles!notifications_actor_id_fkey (
           id,
@@ -342,7 +366,8 @@ export async function getNotificationById(notificationId: string): Promise<{
           full_name,
           avatar_url
         )
-      `)
+      `
+      )
       .eq("id", notificationId)
       .eq("user_id", user.id)
       .single();

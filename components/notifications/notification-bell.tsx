@@ -26,7 +26,7 @@ export function NotificationBell({
   showDropdown = true,
   iconSize = 20,
   variant = "ghost",
-  animate = true
+  animate = true,
 }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [wasRecentlyUpdated, setWasRecentlyUpdated] = useState(false);
@@ -38,7 +38,11 @@ export function NotificationBell({
 
   // Animation for new notifications
   useEffect(() => {
-    if (animate && unreadCount > previousUnreadCount.current && previousUnreadCount.current > 0) {
+    if (
+      animate &&
+      unreadCount > previousUnreadCount.current &&
+      previousUnreadCount.current > 0
+    ) {
       setWasRecentlyUpdated(true);
       const timer = setTimeout(() => setWasRecentlyUpdated(false), 2000);
       return () => clearTimeout(timer);
@@ -59,40 +63,53 @@ export function NotificationBell({
       variant={variant}
       size="sm"
       className={cn(
-        "relative p-2",
-        hasUnread && "text-blue-600 dark:text-blue-400",
+        "relative p-2 rounded-full transition-all duration-200",
+        "hover:bg-pink-50 dark:hover:bg-pink-900/20",
+        "hover:shadow-lg hover:shadow-pink-200/50 dark:hover:shadow-pink-900/20",
+        hasUnread && "text-pink-600 dark:text-pink-400",
+        !hasUnread && "text-gray-600 dark:text-gray-400",
         wasRecentlyUpdated && animate && "animate-pulse",
+        loading && "opacity-50 cursor-not-allowed",
         className
       )}
       disabled={loading}
     >
-      <BellIcon 
-        size={iconSize} 
+      <BellIcon
+        size={iconSize}
         className={cn(
-          "transition-all duration-200",
-          hasUnread && "fill-current",
+          "transition-all duration-300",
+          hasUnread && "fill-current drop-shadow-sm",
           wasRecentlyUpdated && animate && "animate-bounce"
-        )} 
+        )}
       />
-      
+
       {/* Unread count badge */}
       {hasUnread && (
         <Badge
-          variant="destructive"
           className={cn(
-            "absolute -top-1 -right-1 h-5 min-w-[20px] text-xs flex items-center justify-center p-0 border-2 border-background",
+            "absolute -top-1 -right-1 h-5 min-w-[20px] text-xs font-semibold",
+            "flex items-center justify-center p-0",
+            "bg-gradient-to-r from-pink-500 to-purple-600 text-white",
+            "border-2 border-white dark:border-gray-900",
+            "shadow-lg shadow-pink-200/50 dark:shadow-pink-900/30",
+            "rounded-full",
             wasRecentlyUpdated && animate && "animate-pulse scale-110"
           )}
         >
           {formatCount(unreadCount)}
         </Badge>
       )}
-      
+
       {/* Pulse dot for new notifications */}
       {hasUnread && animate && (
-        <span className="absolute -top-1 -right-1 h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <span className="absolute -top-1 -right-1 h-3 w-3 z-10">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gradient-to-r from-pink-400 to-purple-500 opacity-75"></span>
         </span>
+      )}
+
+      {/* Subtle glow effect for unread notifications */}
+      {hasUnread && (
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/20 to-purple-500/20 blur-sm -z-10" />
       )}
     </Button>
   );
@@ -105,13 +122,17 @@ export function NotificationBell({
   // Return button with popover dropdown
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        {bellButton}
-      </PopoverTrigger>
-      <PopoverContent 
-        className="w-80 p-0" 
-        align="end" 
-        sideOffset={5}
+      <PopoverTrigger asChild>{bellButton}</PopoverTrigger>
+      <PopoverContent
+        className={cn(
+          "w-80 p-0 border-0",
+          "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg",
+          "shadow-2xl shadow-pink-200/20 dark:shadow-pink-900/20",
+          "ring-1 ring-white/20 dark:ring-gray-700/30",
+          "rounded-2xl"
+        )}
+        align="end"
+        sideOffset={8}
         onOpenAutoFocus={(e: Event) => e.preventDefault()}
       >
         <NotificationDropdown onClose={() => setIsOpen(false)} />
@@ -123,7 +144,7 @@ export function NotificationBell({
 // Compact version for smaller spaces
 export function NotificationBellCompact({
   className,
-  onClick
+  onClick,
 }: {
   className?: string;
   onClick?: () => void;
@@ -137,20 +158,39 @@ export function NotificationBellCompact({
       onClick={onClick}
       disabled={loading}
       className={cn(
-        "relative p-1 rounded-full hover:bg-accent transition-colors",
+        "relative p-2 rounded-full transition-all duration-200",
+        "hover:bg-pink-50 dark:hover:bg-pink-900/20",
+        "hover:shadow-md hover:shadow-pink-200/30 dark:hover:shadow-pink-900/20",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
     >
-      <Bell 
-        size={18} 
+      <Bell
+        size={18}
         className={cn(
-          hasUnread && "text-blue-600 dark:text-blue-400 fill-current"
-        )} 
+          "transition-colors duration-200",
+          hasUnread
+            ? "text-pink-600 dark:text-pink-400 fill-current"
+            : "text-gray-600 dark:text-gray-400"
+        )}
       />
       {hasUnread && (
-        <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+        <span
+          className={cn(
+            "absolute -top-1 -right-1 h-4 w-4 rounded-full",
+            "bg-gradient-to-r from-pink-500 to-purple-600 text-white",
+            "text-xs font-semibold flex items-center justify-center",
+            "border border-white dark:border-gray-900",
+            "shadow-lg shadow-pink-200/50 dark:shadow-pink-900/30"
+          )}
+        >
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
+      )}
+
+      {/* Subtle glow effect */}
+      {hasUnread && (
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/10 to-purple-500/10 blur-sm -z-10" />
       )}
     </button>
   );

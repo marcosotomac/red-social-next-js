@@ -10,7 +10,7 @@ import {
   markAllNotificationsAsRead,
   deleteNotification,
   Notification,
-  NotificationCounts
+  NotificationCounts,
 } from "@/lib/notifications";
 
 interface UseNotificationsState {
@@ -27,16 +27,16 @@ interface UseNotificationsActions {
   refreshNotifications: () => Promise<void>;
   loadMoreNotifications: () => Promise<void>;
   refreshCounts: () => Promise<void>;
-  
+
   // Notification actions
   markAsRead: (notificationId: string) => Promise<boolean>;
   markAllAsRead: () => Promise<boolean>;
   deleteOne: (notificationId: string) => Promise<boolean>;
-  
+
   // Filters
   toggleUnreadOnly: () => void;
-  setTypeFilter: (type: Notification['type'] | null) => void;
-  
+  setTypeFilter: (type: Notification["type"] | null) => void;
+
   // Real-time
   subscribeToUpdates: () => void;
   unsubscribeFromUpdates: () => void;
@@ -47,7 +47,7 @@ interface UseNotificationsOptions {
   autoRefresh?: boolean;
   realTime?: boolean;
   unreadOnly?: boolean;
-  typeFilter?: Notification['type'] | null;
+  typeFilter?: Notification["type"] | null;
 }
 
 export function useNotifications(options: UseNotificationsOptions = {}) {
@@ -56,7 +56,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     autoRefresh = true,
     realTime = true,
     unreadOnly: initialUnreadOnly = false,
-    typeFilter: initialTypeFilter = null
+    typeFilter: initialTypeFilter = null,
   } = options;
 
   // State
@@ -66,12 +66,14 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     loading: true,
     error: null,
     hasMore: true,
-    lastFetch: null
+    lastFetch: null,
   });
 
   // Filters
   const [unreadOnly, setUnreadOnly] = useState(initialUnreadOnly);
-  const [typeFilter, setTypeFilter] = useState<Notification['type'] | null>(initialTypeFilter);
+  const [typeFilter, setTypeFilter] = useState<Notification["type"] | null>(
+    initialTypeFilter
+  );
 
   // Refs
   const subscriptionRef = useRef<RealtimeChannel | null>(null);
@@ -79,66 +81,75 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
   const offsetRef = useRef(0);
 
   // Load notifications
-  const loadNotifications = useCallback(async (reset: boolean = false) => {
-    try {
-      if (reset) {
-        offsetRef.current = 0;
-        setState(prev => ({ ...prev, loading: true, error: null }));
-      }
+  const loadNotifications = useCallback(
+    async (reset: boolean = false) => {
+      try {
+        if (reset) {
+          offsetRef.current = 0;
+          setState((prev) => ({ ...prev, loading: true, error: null }));
+        }
 
-      const { success, notifications, total, error } = await getUserNotifications(
-        limit,
-        reset ? 0 : offsetRef.current,
-        unreadOnly
-      );
+        const { success, notifications, total, error } =
+          await getUserNotifications(
+            limit,
+            reset ? 0 : offsetRef.current,
+            unreadOnly
+          );
 
-      if (!success || !notifications) {
-        setState(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: error || "Failed to load notifications" 
+        if (!success || !notifications) {
+          setState((prev) => ({
+            ...prev,
+            loading: false,
+            error: error || "Failed to load notifications",
+          }));
+          return;
+        }
+
+        // Filter by type if specified
+        let filteredNotifications = notifications;
+        if (typeFilter) {
+          filteredNotifications = notifications.filter(
+            (n) => n.type === typeFilter
+          );
+        }
+
+        setState((prev) => ({
+          ...prev,
+          notifications: reset
+            ? filteredNotifications
+            : [...prev.notifications, ...filteredNotifications],
+          loading: false,
+          error: null,
+          hasMore:
+            (total || 0) >
+            (reset
+              ? filteredNotifications.length
+              : prev.notifications.length + filteredNotifications.length),
+          lastFetch: new Date(),
         }));
-        return;
+
+        if (!reset) {
+          offsetRef.current += filteredNotifications.length;
+        }
+      } catch (error) {
+        console.error("Error loading notifications:", error);
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: "Failed to load notifications",
+        }));
       }
-
-      // Filter by type if specified
-      let filteredNotifications = notifications;
-      if (typeFilter) {
-        filteredNotifications = notifications.filter(n => n.type === typeFilter);
-      }
-
-      setState(prev => ({
-        ...prev,
-        notifications: reset 
-          ? filteredNotifications 
-          : [...prev.notifications, ...filteredNotifications],
-        loading: false,
-        error: null,
-        hasMore: (total || 0) > (reset ? filteredNotifications.length : prev.notifications.length + filteredNotifications.length),
-        lastFetch: new Date()
-      }));
-
-      if (!reset) {
-        offsetRef.current += filteredNotifications.length;
-      }
-
-    } catch (error) {
-      console.error("Error loading notifications:", error);
-      setState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: "Failed to load notifications" 
-      }));
-    }
-  }, [limit, unreadOnly, typeFilter]);
+    },
+    [limit, unreadOnly, typeFilter]
+  );
 
   // Load counts
   const loadCounts = useCallback(async () => {
     try {
       const { success, counts, error } = await getNotificationCounts();
-      
+
       if (success && counts) {
-        setState(prev => ({ ...prev, counts }));
+        setState((prev) => ({ ...prev, counts }));
       } else {
         console.error("Error loading counts:", error);
       }
@@ -162,47 +173,53 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     await loadCounts();
   }, [loadCounts]);
 
-  const markAsRead = useCallback(async (notificationId: string): Promise<boolean> => {
-    try {
-      const { success } = await markNotificationAsRead(notificationId);
-      
-      if (success) {
-        // Update local state
-        setState(prev => ({
-          ...prev,
-          notifications: prev.notifications.map(n => 
-            n.id === notificationId ? { ...n, is_read: true } : n
-          )
-        }));
-        
-        // Refresh counts
-        await refreshCounts();
-        return true;
+  const markAsRead = useCallback(
+    async (notificationId: string): Promise<boolean> => {
+      try {
+        const { success } = await markNotificationAsRead(notificationId);
+
+        if (success) {
+          // Update local state
+          setState((prev) => ({
+            ...prev,
+            notifications: prev.notifications.map((n) =>
+              n.id === notificationId ? { ...n, is_read: true } : n
+            ),
+          }));
+
+          // Refresh counts
+          await refreshCounts();
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+        return false;
       }
-      
-      return false;
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      return false;
-    }
-  }, [refreshCounts]);
+    },
+    [refreshCounts]
+  );
 
   const markAllAsRead = useCallback(async (): Promise<boolean> => {
     try {
       const { success } = await markAllNotificationsAsRead();
-      
+
       if (success) {
         // Update local state
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          notifications: prev.notifications.map(n => ({ ...n, is_read: true }))
+          notifications: prev.notifications.map((n) => ({
+            ...n,
+            is_read: true,
+          })),
         }));
-        
+
         // Refresh counts
         await refreshCounts();
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
@@ -210,59 +227,67 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     }
   }, [refreshCounts]);
 
-  const deleteOne = useCallback(async (notificationId: string): Promise<boolean> => {
-    try {
-      const { success } = await deleteNotification(notificationId);
-      
-      if (success) {
-        // Update local state
-        setState(prev => ({
-          ...prev,
-          notifications: prev.notifications.filter(n => n.id !== notificationId)
-        }));
-        
-        // Refresh counts
-        await refreshCounts();
-        return true;
+  const deleteOne = useCallback(
+    async (notificationId: string): Promise<boolean> => {
+      try {
+        const { success } = await deleteNotification(notificationId);
+
+        if (success) {
+          // Update local state
+          setState((prev) => ({
+            ...prev,
+            notifications: prev.notifications.filter(
+              (n) => n.id !== notificationId
+            ),
+          }));
+
+          // Refresh counts
+          await refreshCounts();
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+        return false;
       }
-      
-      return false;
-    } catch (error) {
-      console.error("Error deleting notification:", error);
-      return false;
-    }
-  }, [refreshCounts]);
+    },
+    [refreshCounts]
+  );
 
   const toggleUnreadOnly = useCallback(() => {
-    setUnreadOnly(prev => !prev);
+    setUnreadOnly((prev) => !prev);
   }, []);
 
-  const setTypeFilterAction = useCallback((type: Notification['type'] | null) => {
-    setTypeFilter(type);
-  }, []);
+  const setTypeFilterAction = useCallback(
+    (type: Notification["type"] | null) => {
+      setTypeFilter(type);
+    },
+    []
+  );
 
   // Real-time subscription
   const subscribeToUpdates = useCallback(() => {
     if (!realTime || subscriptionRef.current) return;
 
     const supabase = supabaseRef.current;
-    
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
 
       subscriptionRef.current = supabase
-        .channel('notifications')
+        .channel("notifications")
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: '*',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
-            console.log('Notification update:', payload);
-            
+            console.log("Notification update:", payload);
+
             // Refresh data when notifications change
             refreshNotifications();
           }
@@ -316,14 +341,14 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
     toggleUnreadOnly,
     setTypeFilter: setTypeFilterAction,
     subscribeToUpdates,
-    unsubscribeFromUpdates
+    unsubscribeFromUpdates,
   };
 
   return {
     ...state,
     unreadOnly,
     typeFilter,
-    ...actions
+    ...actions,
   };
 }
 
@@ -346,7 +371,7 @@ export function useNotificationCounts() {
 
   useEffect(() => {
     refresh();
-    
+
     // Auto-refresh every minute
     const interval = setInterval(refresh, 60000);
     return () => clearInterval(interval);
@@ -358,7 +383,9 @@ export function useNotificationCounts() {
 /**
  * Hook for real-time notification updates
  */
-export function useNotificationUpdates(onUpdate?: (notification: Notification) => void) {
+export function useNotificationUpdates(
+  onUpdate?: (notification: Notification) => void
+) {
   const supabase = createClient();
   const subscriptionRef = useRef<RealtimeChannel | null>(null);
 
@@ -369,14 +396,14 @@ export function useNotificationUpdates(onUpdate?: (notification: Notification) =
       if (!user) return;
 
       subscriptionRef.current = supabase
-        .channel('notification_updates')
+        .channel("notification_updates")
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
             if (onUpdate && payload.new) {

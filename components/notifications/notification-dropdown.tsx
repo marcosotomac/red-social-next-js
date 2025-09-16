@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { 
-  Check, 
-  MoreHorizontal, 
-  Trash2, 
+import {
+  Check,
+  MoreHorizontal,
+  Trash2,
   Mail,
   ExternalLink,
   Bell,
-  Settings
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -38,11 +38,11 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
     markAsRead,
     markAllAsRead,
     deleteOne,
-    refreshNotifications
+    refreshNotifications,
   } = useNotifications({
     limit: 10,
     realTime: true,
-    unreadOnly: false
+    unreadOnly: false,
   });
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -65,19 +65,19 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
     setActionLoading(null);
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: Notification["type"]) => {
     switch (type) {
-      case 'like_post':
+      case "like_post":
         return "❤️";
-      case 'like_story':
+      case "like_story":
         return "💖";
-      case 'comment':
+      case "comment":
         return "💬";
-      case 'follow':
+      case "follow":
         return "👤";
-      case 'message':
+      case "message":
         return "📩";
-      case 'mention':
+      case "mention":
         return "📢";
       default:
         return "🔔";
@@ -87,7 +87,7 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
   const formatNotificationTime = (createdAt: string) => {
     return formatDistanceToNow(new Date(createdAt), {
       addSuffix: true,
-      locale: es
+      locale: es,
     });
   };
 
@@ -137,7 +137,9 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <Bell size={48} className="mx-auto text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">Cargando notificaciones...</p>
+              <p className="text-muted-foreground">
+                Cargando notificaciones...
+              </p>
             </div>
           </div>
         ) : notifications.length === 0 ? (
@@ -197,7 +199,7 @@ interface NotificationItemProps {
   onDelete: (id: string) => void;
   isLoading: boolean;
   formatTime: (date: string) => string;
-  getIcon: (type: Notification['type']) => string;
+  getIcon: (type: Notification["type"]) => string;
 }
 
 function NotificationItem({
@@ -206,7 +208,7 @@ function NotificationItem({
   onDelete,
   isLoading,
   formatTime,
-  getIcon
+  getIcon,
 }: NotificationItemProps) {
   return (
     <div

@@ -113,21 +113,26 @@ export function ChatWindow({
   if (loading) {
     return (
       <div className={`flex flex-col h-full ${className}`}>
-        <div className="p-4 border-b">
+        <div className="p-6 border-b border-white/20 dark:border-gray-700/30">
           <div className="flex items-center gap-3">
             {onBack && (
-              <Button variant="ghost" size="icon" onClick={onBack}>
-                <ArrowLeft className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+              >
+                <ArrowLeft className="h-5 w-5 text-pink-600 dark:text-pink-400" />
               </Button>
             )}
             <div className="animate-pulse flex items-center gap-3">
-              <div className="w-10 h-10 bg-muted rounded-full" />
-              <div className="w-32 h-4 bg-muted rounded" />
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full" />
+              <div className="w-32 h-4 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-lg" />
             </div>
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+          <div className="w-8 h-8 border-3 border-pink-200 dark:border-pink-700 border-t-pink-600 dark:border-t-pink-400 rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -136,87 +141,113 @@ export function ChatWindow({
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b bg-background">
+      <div className="p-6 border-b border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {onBack && (
-              <Button variant="ghost" size="icon" onClick={onBack}>
-                <ArrowLeft className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+              >
+                <ArrowLeft className="h-5 w-5 text-pink-600 dark:text-pink-400" />
               </Button>
             )}
 
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-12 w-12 ring-2 ring-white/50 shadow-lg">
               <AvatarImage src={getConversationAvatar() || undefined} />
-              <AvatarFallback>{getConversationInitials()}</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold">
+                {getConversationInitials()}
+              </AvatarFallback>
             </Avatar>
 
             <div className="flex-1">
-              <h3 className="font-semibold">{getConversationTitle()}</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                {getConversationTitle()}
+              </h3>
               {conversation.is_group && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {conversation.participants?.length || 0} miembros
                 </p>
               )}
             </div>
           </div>
 
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+          >
+            <MoreVertical className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           </Button>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              <p>No hay mensajes aún.</p>
-              <p className="text-sm">¡Sé el primero en enviar un mensaje!</p>
-            </div>
-          ) : (
-            messages.map((message, index) => {
-              const isOwnMessage = message.sender_id === currentUserId;
-              const previousMessage = messages[index - 1];
-              const showAvatar =
-                !previousMessage ||
-                previousMessage.sender_id !== message.sender_id ||
-                new Date(message.created_at).getTime() -
-                  new Date(previousMessage.created_at).getTime() >
-                  300000; // 5 minutes
-
-              const showDateDivider = shouldShowDateDivider(
-                message.created_at,
-                previousMessage?.created_at
-              );
-
-              return (
-                <div key={message.id}>
-                  {showDateDivider && <DateDivider date={message.created_at} />}
-                  <MessageBubble
-                    message={message}
-                    isOwnMessage={isOwnMessage}
-                    showAvatar={showAvatar}
-                  />
+      <div className="flex-1 overflow-hidden bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-4">
+            {messages.length === 0 ? (
+              <div className="text-center py-12 space-y-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
+                  <span className="text-2xl">💬</span>
                 </div>
-              );
-            })
-          )}
-
-          {sendingMessage && (
-            <div className="flex justify-end">
-              <div className="bg-primary/50 text-primary-foreground px-3 py-2 rounded-lg text-sm">
-                Enviando...
+                <div className="space-y-2">
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">
+                    No hay mensajes aún
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-500">
+                    ¡Sé el primero en enviar un mensaje!
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              messages.map((message, index) => {
+                const isOwnMessage = message.sender_id === currentUserId;
+                const previousMessage = messages[index - 1];
+                const showAvatar =
+                  !previousMessage ||
+                  previousMessage.sender_id !== message.sender_id ||
+                  new Date(message.created_at).getTime() -
+                    new Date(previousMessage.created_at).getTime() >
+                    300000; // 5 minutes
 
-          {/* Typing indicator */}
-          <TypingIndicator typingUsers={typingUsers} />
+                const showDateDivider = shouldShowDateDivider(
+                  message.created_at,
+                  previousMessage?.created_at
+                );
 
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
+                return (
+                  <div key={message.id}>
+                    {showDateDivider && (
+                      <DateDivider date={message.created_at} />
+                    )}
+                    <MessageBubble
+                      message={message}
+                      isOwnMessage={isOwnMessage}
+                      showAvatar={showAvatar}
+                    />
+                  </div>
+                );
+              })
+            )}
+
+            {sendingMessage && (
+              <div className="flex justify-end">
+                <div className="bg-gradient-to-r from-pink-400 to-purple-500 text-white px-4 py-2 rounded-2xl text-sm shadow-lg animate-pulse">
+                  Enviando...
+                </div>
+              </div>
+            )}
+
+            {/* Typing indicator */}
+            <TypingIndicator typingUsers={typingUsers} />
+
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Input */}
       <ChatInput

@@ -111,11 +111,17 @@ export function ChatList({
     return (
       <div className="h-full">
         {/* Header */}
-        <div className="p-4 border-b">
+        <div className="p-6 border-b border-white/20 dark:border-gray-700/30">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Mensajes</h2>
-            <Button size="icon" variant="ghost">
-              <Plus className="h-4 w-4" />
+            <h2 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              Mensajes
+            </h2>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full"
+            >
+              <Plus className="h-5 w-5 text-pink-600 dark:text-pink-400" />
             </Button>
           </div>
         </div>
@@ -125,14 +131,14 @@ export function ChatList({
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 rounded-lg animate-pulse"
+              className="flex items-center gap-3 p-4 rounded-xl animate-pulse backdrop-blur-sm bg-white/40 dark:bg-gray-800/40"
             >
-              <div className="w-12 h-12 bg-muted rounded-full" />
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full" />
               <div className="flex-1 space-y-2">
-                <div className="w-3/4 h-4 bg-muted rounded" />
-                <div className="w-1/2 h-3 bg-muted rounded" />
+                <div className="w-3/4 h-4 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-lg" />
+                <div className="w-1/2 h-3 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-lg" />
               </div>
-              <div className="w-8 h-3 bg-muted rounded" />
+              <div className="w-8 h-3 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-lg" />
             </div>
           ))}
         </div>
@@ -143,11 +149,18 @@ export function ChatList({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b bg-background">
+      <div className="p-6 border-b border-white/20 dark:border-gray-700/30">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Mensajes</h2>
-          <Button size="icon" variant="ghost" onClick={onNewChat}>
-            <Plus className="h-4 w-4" />
+          <h2 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            Mensajes
+          </h2>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onNewChat}
+            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+          >
+            <Plus className="h-5 w-5 text-pink-600 dark:text-pink-400" />
           </Button>
         </div>
       </div>
@@ -155,37 +168,47 @@ export function ChatList({
       {/* Conversations list */}
       <div className="flex-1 overflow-y-auto">
         {conversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <MessageCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold mb-2">No hay conversaciones</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Comienza una nueva conversación para empezar a chatear.
-            </p>
-            <Button onClick={onNewChat}>
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center shadow-lg">
+              <MessageCircle className="h-8 w-8 text-pink-600 dark:text-pink-400" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                No hay conversaciones
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs leading-relaxed">
+                Comienza una nueva conversación para empezar a chatear.
+              </p>
+            </div>
+            <Button
+              onClick={onNewChat}
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white border-0 shadow-lg"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nueva conversación
             </Button>
           </div>
         ) : (
-          <div className="p-2">
+          <div className="p-3 space-y-2">
             {conversations.map((conversation) => (
               <Button
                 key={conversation.id}
                 variant="ghost"
                 className={cn(
-                  "w-full h-auto p-3 justify-start rounded-lg mb-1",
-                  "hover:bg-muted/50 transition-colors",
-                  selectedConversationId === conversation.id && "bg-muted"
+                  "w-full h-auto p-4 justify-start rounded-xl transition-all duration-200",
+                  "hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-md backdrop-blur-sm",
+                  selectedConversationId === conversation.id &&
+                    "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-md border border-pink-200/50 dark:border-pink-700/30"
                 )}
                 onClick={() => onSelectConversation(conversation)}
               >
                 <div className="flex items-center gap-3 w-full">
                   <div className="relative">
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-12 w-12 ring-2 ring-white/50 shadow-sm">
                       <AvatarImage
                         src={getConversationAvatar(conversation) || undefined}
                       />
-                      <AvatarFallback className="text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white text-sm font-semibold">
                         {getConversationInitials(conversation)}
                       </AvatarFallback>
                     </Avatar>
@@ -200,13 +223,13 @@ export function ChatList({
 
                   <div className="flex-1 text-left min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-medium truncate">
+                      <h4 className="font-medium truncate text-gray-900 dark:text-gray-100">
                         {getConversationTitle(conversation)}
                       </h4>
 
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {conversation.last_message && (
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {formatLastMessageTime(
                               conversation.last_message.created_at
                             )}
@@ -216,7 +239,7 @@ export function ChatList({
                         {conversation.unread_count > 0 && (
                           <Badge
                             variant="default"
-                            className="h-5 min-w-[20px] text-xs"
+                            className="h-5 min-w-[20px] text-xs bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 shadow-lg"
                           >
                             {conversation.unread_count > 99
                               ? "99+"
@@ -226,7 +249,7 @@ export function ChatList({
                       </div>
                     </div>
 
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                       {getLastMessagePreview(conversation)}
                     </p>
                   </div>

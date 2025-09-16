@@ -3,15 +3,15 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { 
-  Bell, 
+import {
+  Bell,
   Search,
   Check,
   CheckCheck,
   Trash2,
   RefreshCw,
   Settings,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,20 +57,21 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
     deleteOne,
     loadMoreNotifications,
     refreshNotifications,
-    setTypeFilter
+    setTypeFilter,
   } = useNotifications({
     limit: 20,
     realTime: true,
-    unreadOnly: currentTab === "unread"
+    unreadOnly: currentTab === "unread",
   });
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // Filter notifications based on search
-  const filteredNotifications = notifications.filter(notification =>
-    searchQuery === "" ||
-    notification.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    notification.message.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredNotifications = notifications.filter(
+    (notification) =>
+      searchQuery === "" ||
+      notification.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      notification.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleMarkAsRead = async (notificationId: string) => {
@@ -83,7 +84,7 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
     setActionLoading(notificationId);
     await deleteOne(notificationId);
     setActionLoading(null);
-    setSelectedItems(prev => prev.filter(id => id !== notificationId));
+    setSelectedItems((prev) => prev.filter((id) => id !== notificationId));
   };
 
   const handleMarkAllAsRead = async () => {
@@ -96,7 +97,7 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
     if (selectedItems.length === 0) return;
 
     setActionLoading("bulk");
-    
+
     if (action === "read") {
       for (const id of selectedItems) {
         await markAsRead(id);
@@ -106,15 +107,15 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
         await deleteOne(id);
       }
     }
-    
+
     setSelectedItems([]);
     setActionLoading(null);
   };
 
   const toggleSelectItem = (notificationId: string) => {
-    setSelectedItems(prev =>
+    setSelectedItems((prev) =>
       prev.includes(notificationId)
-        ? prev.filter(id => id !== notificationId)
+        ? prev.filter((id) => id !== notificationId)
         : [...prev, notificationId]
     );
   };
@@ -123,23 +124,23 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
     if (selectedItems.length === filteredNotifications.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(filteredNotifications.map(n => n.id));
+      setSelectedItems(filteredNotifications.map((n) => n.id));
     }
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: Notification["type"]) => {
     switch (type) {
-      case 'like_post':
+      case "like_post":
         return "❤️";
-      case 'like_story':
+      case "like_story":
         return "💖";
-      case 'comment':
+      case "comment":
         return "💬";
-      case 'follow':
+      case "follow":
         return "👤";
-      case 'message':
+      case "message":
         return "📩";
-      case 'mention':
+      case "mention":
         return "📢";
       default:
         return "🔔";
@@ -173,14 +174,19 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
                 onClick={refreshNotifications}
                 disabled={loading}
               >
-                <RefreshCw size={16} className={cn(loading && "animate-spin")} />
+                <RefreshCw
+                  size={16}
+                  className={cn(loading && "animate-spin")}
+                />
                 Actualizar
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleMarkAllAsRead}
-                disabled={actionLoading === "all" || (counts?.unread || 0) === 0}
+                disabled={
+                  actionLoading === "all" || (counts?.unread || 0) === 0
+                }
               >
                 <CheckCheck size={16} />
                 Marcar todo como leído
@@ -201,19 +207,25 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-blue-600">{counts.unread}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {counts.unread}
+              </div>
               <p className="text-sm text-muted-foreground">No leídas</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-green-600">{counts.total - counts.unread}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {counts.total - counts.unread}
+              </div>
               <p className="text-sm text-muted-foreground">Leídas</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-purple-600">{counts.byType.message}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {counts.byType.message}
+              </div>
               <p className="text-sm text-muted-foreground">Mensajes</p>
             </CardContent>
           </Card>
@@ -226,7 +238,10 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                />
                 <Input
                   placeholder="Buscar notificaciones..."
                   value={searchQuery}
@@ -236,14 +251,23 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
               </div>
             </div>
             <div className="flex gap-2">
-              <Select value={typeFilter || "all"} onValueChange={(value: string) => setTypeFilter(value === "all" ? null : value as Notification['type'])}>
+              <Select
+                value={typeFilter || "all"}
+                onValueChange={(value: string) =>
+                  setTypeFilter(
+                    value === "all" ? null : (value as Notification["type"])
+                  )
+                }
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filtrar por tipo" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos los tipos</SelectItem>
                   <SelectItem value="like_post">Me gusta en posts</SelectItem>
-                  <SelectItem value="like_story">Me gusta en stories</SelectItem>
+                  <SelectItem value="like_story">
+                    Me gusta en stories
+                  </SelectItem>
                   <SelectItem value="comment">Comentarios</SelectItem>
                   <SelectItem value="follow">Seguidores</SelectItem>
                   <SelectItem value="message">Mensajes</SelectItem>
@@ -260,14 +284,13 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {selectedItems.length} seleccionada{selectedItems.length !== 1 ? 's' : ''}
+                    {selectedItems.length} seleccionada
+                    {selectedItems.length !== 1 ? "s" : ""}
                   </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleSelectAll}
-                  >
-                    {selectedItems.length === filteredNotifications.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+                  <Button variant="outline" size="sm" onClick={toggleSelectAll}>
+                    {selectedItems.length === filteredNotifications.length
+                      ? "Deseleccionar todo"
+                      : "Seleccionar todo"}
                   </Button>
                 </div>
                 <div className="flex gap-2">
@@ -298,15 +321,28 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
       </Card>
 
       {/* Tabs */}
-      <Tabs value={currentTab} onValueChange={(value: string) => setCurrentTab(value as "all" | "unread")}>
+      <Tabs
+        value={currentTab}
+        onValueChange={(value: string) =>
+          setCurrentTab(value as "all" | "unread")
+        }
+      >
         <TabsList>
           <TabsTrigger value="all">
             Todas
-            {counts && <Badge variant="secondary" className="ml-2">{counts.total}</Badge>}
+            {counts && (
+              <Badge variant="secondary" className="ml-2">
+                {counts.total}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="unread">
             No leídas
-            {counts && counts.unread > 0 && <Badge variant="destructive" className="ml-2">{counts.unread}</Badge>}
+            {counts && counts.unread > 0 && (
+              <Badge variant="destructive" className="ml-2">
+                {counts.unread}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -316,8 +352,13 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
             <Card>
               <CardContent className="p-8">
                 <div className="text-center">
-                  <Bell size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Cargando notificaciones...</p>
+                  <Bell
+                    size={48}
+                    className="mx-auto text-muted-foreground mb-4"
+                  />
+                  <p className="text-muted-foreground">
+                    Cargando notificaciones...
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -325,12 +366,19 @@ export function NotificationPage({ onBack }: NotificationPageProps) {
             <Card>
               <CardContent className="p-8">
                 <div className="text-center">
-                  <Bell size={48} className="mx-auto text-muted-foreground mb-4" />
+                  <Bell
+                    size={48}
+                    className="mx-auto text-muted-foreground mb-4"
+                  />
                   <p className="text-muted-foreground">
-                    {searchQuery ? "No se encontraron notificaciones" : "No hay notificaciones"}
+                    {searchQuery
+                      ? "No se encontraron notificaciones"
+                      : "No hay notificaciones"}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    {searchQuery ? "Intenta con otros términos de búsqueda" : "Te notificaremos cuando algo interesante suceda"}
+                    {searchQuery
+                      ? "Intenta con otros términos de búsqueda"
+                      : "Te notificaremos cuando algo interesante suceda"}
                   </p>
                 </div>
               </CardContent>
@@ -377,7 +425,7 @@ interface NotificationItemProps {
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
   isLoading: boolean;
-  getIcon: (type: Notification['type']) => string;
+  getIcon: (type: Notification["type"]) => string;
 }
 
 function NotificationItem({
@@ -387,21 +435,24 @@ function NotificationItem({
   onMarkAsRead,
   onDelete,
   isLoading,
-  getIcon
+  getIcon,
 }: NotificationItemProps) {
   const formatTime = (createdAt: string) => {
     return formatDistanceToNow(new Date(createdAt), {
       addSuffix: true,
-      locale: es
+      locale: es,
     });
   };
 
   return (
-    <Card className={cn(
-      "transition-all",
-      !notification.is_read && "border-blue-200 bg-blue-50/30 dark:border-blue-800 dark:bg-blue-950/20",
-      isSelected && "ring-2 ring-blue-500"
-    )}>
+    <Card
+      className={cn(
+        "transition-all",
+        !notification.is_read &&
+          "border-blue-200 bg-blue-50/30 dark:border-blue-800 dark:bg-blue-950/20",
+        isSelected && "ring-2 ring-blue-500"
+      )}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           {/* Checkbox */}
@@ -438,7 +489,9 @@ function NotificationItem({
                   )}
                   {notification.actor && (
                     <span className="text-sm text-muted-foreground">
-                      por {notification.actor.full_name || notification.actor.username}
+                      por{" "}
+                      {notification.actor.full_name ||
+                        notification.actor.username}
                     </span>
                   )}
                 </div>
