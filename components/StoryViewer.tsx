@@ -9,6 +9,7 @@ import {
   Download,
   Share2,
   Bookmark,
+  Trash2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
   markStoryAsViewed,
   toggleStoryLike,
   saveStoryAsHighlight,
+  deleteStory,
 } from "@/lib/stories";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -29,6 +31,7 @@ interface StoryViewerProps {
   onNext: () => void;
   onPrevious: () => void;
   currentUserId?: string;
+  onStoryDeleted?: () => void;
 }
 
 export function StoryViewer({
@@ -39,15 +42,28 @@ export function StoryViewer({
   onNext,
   onPrevious,
   currentUserId,
+  onStoryDeleted,
 }: StoryViewerProps) {
   const [progress, setProgress] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const confirmToastRef = useRef<string | number | null>(null);
 
   const currentStory = stories[currentStoryIndex];
   const isOwnStory = currentStory?.author_id === currentUserId;
+
+  // Function to close delete confirmation toast
+  const closeDeleteConfirmation = () => {
+    if (confirmToastRef.current) {
+      toast.dismiss(confirmToastRef.current);
+      confirmToastRef.current = null;
+    }
+    setIsDeleteConfirmOpen(false);
+    setIsPaused(false);
+  };
 
   // Reset progress and liked state when story changes
   useEffect(() => {
@@ -65,7 +81,14 @@ export function StoryViewer({
 
   // Progress bar and auto-advance logic
   useEffect(() => {
-    if (!isOpen || !currentStory || isPaused || isLoading) return;
+    if (
+      !isOpen ||
+      !currentStory ||
+      isPaused ||
+      isLoading ||
+      isDeleteConfirmOpen
+    )
+      return;
 
     const duration = currentStory.duration * 1000; // Convert to milliseconds
     const interval = 50; // Update every 50ms for smooth progress
@@ -97,6 +120,7 @@ export function StoryViewer({
     currentStory,
     isPaused,
     isLoading,
+    isDeleteConfirmOpen,
     currentStoryIndex,
     stories.length,
     onNext,
@@ -107,6 +131,12 @@ export function StoryViewer({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
+
+      // If delete confirmation is open, close it on any key press
+      if (isDeleteConfirmOpen) {
+        closeDeleteConfirmation();
+        return;
+      }
 
       switch (e.key) {
         case "Escape":
@@ -120,14 +150,16 @@ export function StoryViewer({
           break;
         case " ":
           e.preventDefault();
-          setIsPaused((prev) => !prev);
+          if (!isDeleteConfirmOpen) {
+            setIsPaused((prev) => !prev);
+          }
           break;
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, onNext, onPrevious]);
+  }, [isOpen, onClose, onNext, onPrevious, isDeleteConfirmOpen]);
 
   // Cleanup intervals on unmount
   useEffect(() => {
@@ -217,7 +249,104 @@ export function StoryViewer({
     }
   };
 
+  const handleDeleteStory = async () => {
+    if (!currentStory || !isOwnStory) return;
+
+    // Set the confirmation dialog as open and pause the story
+    setIsDeleteConfirmOpen(true);
+    setIsPaused(true);
+
+    // Show only confirmation toast in the center
+    const confirmToast = toast(
+      <div className="flex flex-col space-y-3">
+        <p className="font-medium">¿Eliminar esta story?</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Esta acción no se puede deshacer
+        </p>
+        <div className="flex space-x-2 justify-end">
+          <button
+            onClick={() => {
+              toast.dismiss(confirmToast);
+              confirmToastRef.current = null;
+              // Close confirmation dialog and resume the story when user cancels
+              setIsDeleteConfirmOpen(false);
+              setIsPaused(false);
+            }}
+            className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(confirmToast);
+              confirmToastRef.current = null;
+              // Keep confirmation dialog open and paused while deleting
+
+              try {
+                const result = await deleteStory(currentStory.id);
+                if (result.success) {
+                  // Handle navigation after successful deletion
+                  setIsDeleteConfirmOpen(false);
+                  if (stories.length === 1) {
+                    onClose();
+                  } else {
+                    if (currentStoryIndex >= stories.length - 1) {
+                      onPrevious();
+                    } else {
+                      onNext();
+                    }
+                  }
+
+                  // Notify parent to refresh stories
+                  if (onStoryDeleted) {
+                    onStoryDeleted();
+                  }
+                } else {
+                  console.error("Error deleting story:", result.error);
+                  // Close confirmation dialog and resume story if deletion failed
+                  setIsDeleteConfirmOpen(false);
+                  setIsPaused(false);
+                }
+              } catch (error) {
+                console.error("Error deleting story:", error);
+                // Close confirmation dialog and resume story if deletion failed
+                setIsDeleteConfirmOpen(false);
+                setIsPaused(false);
+              }
+            }}
+            className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>,
+      {
+        duration: Infinity,
+        closeButton: false,
+        position: "top-center",
+        style: {
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 9999,
+          minWidth: "300px",
+          maxWidth: "400px",
+        },
+      }
+    );
+
+    // Store toast reference for manual dismissal
+    confirmToastRef.current = confirmToast;
+  };
+
   const handleTap = (e: React.MouseEvent) => {
+    // If delete confirmation is open, close it first
+    if (isDeleteConfirmOpen) {
+      closeDeleteConfirmation();
+      return;
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const width = rect.width;
@@ -282,14 +411,24 @@ export function StoryViewer({
         <div className="flex items-center space-x-2">
           {isOwnStory ? (
             // Own story options
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 p-2 h-auto"
-              onClick={handleSaveAsHighlight}
-            >
-              <Bookmark className="w-5 h-5" />
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 p-2 h-auto"
+                onClick={handleSaveAsHighlight}
+              >
+                <Bookmark className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-red-500/20 p-2 h-auto"
+                onClick={handleDeleteStory}
+              >
+                <Trash2 className="w-5 h-5" />
+              </Button>
+            </>
           ) : (
             // Other users' story options
             <>
@@ -327,7 +466,10 @@ export function StoryViewer({
             variant="ghost"
             size="sm"
             className="text-white hover:bg-white/20 p-2 h-auto"
-            onClick={onClose}
+            onClick={() => {
+              closeDeleteConfirmation();
+              onClose();
+            }}
           >
             <X className="w-5 h-5" />
           </Button>
@@ -340,7 +482,10 @@ export function StoryViewer({
           variant="ghost"
           size="sm"
           className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white hover:bg-white/20 p-2 h-auto"
-          onClick={onPrevious}
+          onClick={() => {
+            closeDeleteConfirmation();
+            onPrevious();
+          }}
         >
           <ChevronLeft className="w-6 h-6" />
         </Button>
@@ -351,7 +496,10 @@ export function StoryViewer({
           variant="ghost"
           size="sm"
           className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white hover:bg-white/20 p-2 h-auto"
-          onClick={onNext}
+          onClick={() => {
+            closeDeleteConfirmation();
+            onNext();
+          }}
         >
           <ChevronRight className="w-6 h-6" />
         </Button>
@@ -361,8 +509,8 @@ export function StoryViewer({
       <div
         className="w-full h-full flex items-center justify-center cursor-pointer"
         onClick={handleTap}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
+        onMouseEnter={() => !isDeleteConfirmOpen && setIsPaused(true)}
+        onMouseLeave={() => !isDeleteConfirmOpen && setIsPaused(false)}
       >
         {currentStory.media_type === "image" ? (
           <div className="relative w-full h-full">

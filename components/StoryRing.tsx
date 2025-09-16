@@ -13,6 +13,7 @@ interface StoryRingProps {
   hasUnviewed?: boolean;
   isOwnStory?: boolean;
   onClick: () => void;
+  onAddStoryClick?: () => void;
   isAddStory?: boolean;
 }
 
@@ -21,11 +22,19 @@ export function StoryRing({
   hasUnviewed = false,
   isOwnStory = false,
   onClick,
+  onAddStoryClick,
   isAddStory = false,
 }: StoryRingProps) {
   const ringColor = hasUnviewed
     ? "bg-gradient-to-tr from-pink-500 via-purple-500 to-yellow-500"
     : "bg-gray-300 dark:bg-gray-600";
+
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onAddStoryClick) {
+      onAddStoryClick();
+    }
+  };
 
   if (isAddStory) {
     return (
@@ -67,9 +76,12 @@ export function StoryRing({
 
         {/* Plus icon for own story if no stories exist */}
         {isOwnStory && (
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900">
+          <button
+            onClick={handleAddClick}
+            className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 hover:bg-blue-600 transition-colors z-10"
+          >
             <Plus className="w-3 h-3 text-white" />
-          </div>
+          </button>
         )}
       </div>
 

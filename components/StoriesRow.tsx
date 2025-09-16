@@ -111,6 +111,7 @@ export function StoriesRow({
                       hasUnviewed={group.has_unviewed}
                       isOwnStory={true}
                       onClick={() => handleStoryClick(group)}
+                      onAddStoryClick={handleAddStoryClick}
                     />
                   ))
               )}

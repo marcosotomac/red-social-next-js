@@ -417,6 +417,7 @@ export default function FeedPage() {
         onNext={goToNextStory}
         onPrevious={goToPreviousStory}
         currentUserId={user.id}
+        onStoryDeleted={fetchStories}
       />
 
       {/* Story Creator Modal */}
