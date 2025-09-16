@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Comments } from "@/components/Comments";
 import { PostActionsMenu } from "@/components/PostActionsMenu";
 import { EditPostDialog } from "@/components/EditPostDialog";
@@ -220,16 +219,24 @@ export function PostCard({
                 variant="ghost"
                 size="sm"
                 onClick={handleCommentToggle}
-                className={`flex items-center space-x-1 sm:space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
+                className={`flex items-center space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
                   commentsOpen
                     ? "text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 }`}
               >
-                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                <div className="relative">
+                  <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                  {commentsOpen && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  )}
+                </div>
                 <span className="text-xs sm:text-sm font-medium">
                   {commentsCount}
                 </span>
+                {commentsOpen && (
+                  <span className="text-xs text-blue-500 font-medium">• Thread</span>
+                )}
               </Button>
 
               <Button
@@ -261,22 +268,13 @@ export function PostCard({
             </Button>
           </div>
 
-          {/* Engagement Badge */}
-          {likesCount > 0 && (
-            <Badge
-              variant="secondary"
-              className="bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800 text-xs"
-            >
-              {likesCount === 1 ? "1 like" : `${likesCount} likes`}
-            </Badge>
-          )}
+          
 
           {/* Comments Section */}
           <Comments
             postId={post.id}
             currentUserId={currentUserId}
             isOpen={commentsOpen}
-            onToggle={handleCommentToggle}
             commentsCount={commentsCount}
             onCommentsCountChange={handleCommentsCountChange}
           />

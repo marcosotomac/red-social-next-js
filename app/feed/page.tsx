@@ -325,8 +325,9 @@ export default function FeedPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navigation user={user} />
 
-      <main className="container mx-auto px-4 py-6 max-w-2xl">
-        <div className="space-y-6">
+      <main className="w-full px-3 sm:px-4 md:px-6 py-4 sm:py-6">
+        <div className="max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto">
+          <div className="space-y-4 sm:space-y-6">
           {/* Stories Row */}
           <StoriesRow
             currentUserId={user.id}
@@ -371,9 +372,9 @@ export default function FeedPage() {
               </p>
             </div>
           ) : (
-            <ScrollArea className="space-y-6">
+            <ScrollArea className="space-y-4 sm:space-y-6">
               {posts.map((post) => (
-                <div key={post.id} className="mb-6">
+                <div key={post.id} className="mb-4 sm:mb-6">
                   <PostCard
                     post={post}
                     currentUserId={user.id}
@@ -386,6 +387,7 @@ export default function FeedPage() {
               ))}
             </ScrollArea>
           )}
+        </div>
         </div>
       </main>
 

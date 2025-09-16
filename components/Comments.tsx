@@ -40,7 +40,6 @@ interface CommentsProps {
   postId: string;
   currentUserId?: string;
   isOpen: boolean;
-  onToggle: () => void;
   commentsCount: number;
   onCommentsCountChange?: (newCount: number) => void;
 }
@@ -49,7 +48,6 @@ export function Comments({
   postId,
   currentUserId,
   isOpen,
-  onToggle,
   commentsCount,
   onCommentsCountChange,
 }: CommentsProps) {
@@ -304,66 +302,40 @@ export function Comments({
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4">
-      {/* Comments toggle button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onToggle}
-        className={`flex items-center space-x-2 h-7 sm:h-8 px-1 sm:px-2 transition-all duration-200 ${
-          isOpen
-            ? "text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-            : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-        }`}
-      >
-        <div className="relative">
-          <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-          {isOpen && (
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          )}
-        </div>
-        <span className="text-xs sm:text-sm font-medium">{commentsCount}</span>
-        {isOpen && (
-          <span className="text-xs text-blue-500 font-medium">• Thread</span>
-        )}
-      </Button>
-
+    <div>
       {/* Comments section */}
       {isOpen && (
-        <div className="relative bg-gradient-to-br from-blue-50/50 to-indigo-50/30 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-xl p-3 sm:p-4 border border-blue-100/50 dark:border-blue-800/30 backdrop-blur-sm">
+        <div className="relative bg-gradient-to-br from-blue-50/50 to-indigo-50/30 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border border-blue-100/50 dark:border-blue-800/30 backdrop-blur-sm overflow-hidden">
           {/* Thread connector line */}
-          <div className="absolute left-6 sm:left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-indigo-200 to-transparent dark:from-blue-700 dark:via-indigo-700 opacity-60"></div>
+          <div className="absolute left-4 sm:left-5 md:left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-indigo-200 to-transparent dark:from-blue-700 dark:via-indigo-700 opacity-60"></div>
 
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-3 md:space-y-4">
             {/* New comment form */}
             {currentUserId && (
-              <div className="relative flex space-x-2 sm:space-x-3 ml-4 sm:ml-6">
+              <div className="relative flex space-x-2 sm:space-x-3 ml-3 sm:ml-4 md:ml-6">
                 {/* Thread indicator */}
-                <div className="absolute -left-4 sm:-left-6 top-2 w-3 h-3 border-2 border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
-                  <div className="w-1.5 h-1.5 bg-blue-400 dark:bg-blue-500 rounded-full"></div>
+                <div className="absolute -left-3 sm:-left-4 md:-left-6 top-2 w-2.5 h-2.5 sm:w-3 sm:h-3 border-2 border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-400 dark:bg-blue-500 rounded-full"></div>
                 </div>
 
-                <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 ring-2 ring-blue-100 dark:ring-blue-800">
+                <Avatar className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 flex-shrink-0 ring-1 sm:ring-2 ring-blue-100 dark:ring-blue-800">
                   <AvatarFallback className="bg-gradient-to-br from-blue-400 to-indigo-500 text-white text-xs sm:text-sm font-semibold">
                     U
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 space-y-2 min-w-0">
-                  <div className="relative">
-                    <Textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Reply to this thread..."
-                      className="min-h-[70px] sm:min-h-[80px] resize-none border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-600 focus:ring-blue-200 dark:focus:ring-blue-800 text-sm sm:text-base bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl"
-                    />
-                    <MessageCircle className="absolute top-3 right-3 h-4 w-4 text-blue-300 dark:text-blue-600" />
-                  </div>
+                <div className="flex-1 space-y-2 min-w-0 overflow-hidden">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Reply to this thread..."
+                    className="min-h-[60px] sm:min-h-[70px] md:min-h-[80px] resize-none border-gray-200 dark:border-gray-700 focus:border-blue-300 dark:focus:border-blue-600 focus:ring-blue-200 dark:focus:ring-blue-800 text-xs sm:text-sm md:text-base bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl"
+                  />
                   <div className="flex justify-end">
                     <Button
                       onClick={handleSubmitComment}
                       disabled={!newComment.trim() || submitting}
                       size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs sm:text-sm px-3 sm:px-4 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs sm:text-sm px-2 sm:px-3 md:px-4 rounded-md sm:rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                       <Send className="h-3 w-3 mr-1" />
                       {submitting ? "Posting..." : "Reply"}
@@ -379,9 +351,9 @@ export function Comments({
                 Loading comments...
               </div>
             ) : comments.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-gray-500 dark:text-gray-400 ml-4 sm:ml-6">
-                <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm sm:text-base">
+              <div className="text-center py-4 sm:py-6 md:py-8 text-gray-500 dark:text-gray-400 ml-3 sm:ml-4 md:ml-6">
+                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-xs sm:text-sm md:text-base">
                   No comments yet. Be the first to comment!
                 </p>
               </div>
@@ -396,42 +368,52 @@ export function Comments({
                       .toUpperCase() || comment.user.username[0].toUpperCase();
 
                   return (
-                    <div key={comment.id} className="relative ml-4 sm:ml-6">
+                    <div
+                      key={comment.id}
+                      className="relative ml-3 sm:ml-4 md:ml-6"
+                    >
                       {/* Thread node indicator */}
-                      <div className="absolute -left-4 sm:-left-6 top-3 w-3 h-3 border-2 border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
-                        <div className="w-1.5 h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full"></div>
+                      <div className="absolute -left-3 sm:-left-4 md:-left-6 top-2 sm:top-3 w-2.5 h-2.5 sm:w-3 sm:h-3 border-2 border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm">
+                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full"></div>
                       </div>
 
-                      <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 border-l-4 border-l-indigo-200 dark:border-l-indigo-700 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden">
+                      <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 border-l-2 sm:border-l-4 border-l-indigo-200 dark:border-l-indigo-700 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg sm:rounded-xl overflow-hidden">
                         <CardContent className="p-2 sm:p-3">
                           <div className="flex space-x-2 sm:space-x-3">
-                            <Avatar className="h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0 ring-2 ring-indigo-100 dark:ring-indigo-800">
+                            <Avatar className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 flex-shrink-0 ring-1 sm:ring-2 ring-indigo-100 dark:ring-indigo-800">
                               <AvatarImage src={comment.user.avatar_url} />
                               <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-blue-500 text-white text-xs font-semibold">
                                 {initials}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="flex-1 min-w-0">
-                              {/* Header with name, username, time and actions in one line */}
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <div className="flex items-center space-x-1 min-w-0 flex-1">
-                                  <MessageCircle className="h-3 w-3 text-indigo-400 dark:text-indigo-500 flex-shrink-0" />
-                                  <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">
-                                    {comment.user.full_name ||
-                                      comment.user.username}
-                                  </span>
-                                  <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                    @{comment.user.username}
-                                  </span>
-                                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                                    •
-                                  </span>
-                                  <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                                    {formatDistanceToNow(
-                                      new Date(comment.created_at),
-                                      { addSuffix: true }
-                                    )}
-                                  </span>
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              {/* Header with name, username, time and actions */}
+                              <div className="flex items-start justify-between gap-1 mb-1">
+                                <div className="flex flex-col xs:flex-row xs:items-center min-w-0 flex-1">
+                                  {/* First row: Icon + Name on mobile, all inline on larger screens */}
+                                  <div className="flex items-center space-x-1 min-w-0">
+                                    <MessageCircle className="h-3 w-3 text-indigo-400 dark:text-indigo-500 flex-shrink-0" />
+                                    <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">
+                                      {comment.user.full_name ||
+                                        comment.user.username}
+                                    </span>
+                                    <span className="hidden xs:inline text-xs text-gray-500 dark:text-gray-400 truncate">
+                                      @{comment.user.username}
+                                    </span>
+                                  </div>
+                                  {/* Second row: Username + time on mobile, continuation on larger screens */}
+                                  <div className="flex items-center space-x-1 xs:space-x-1 text-xs text-gray-400 dark:text-gray-500">
+                                    <span className="xs:hidden text-gray-500 dark:text-gray-400 truncate">
+                                      @{comment.user.username}
+                                    </span>
+                                    <span className="hidden xs:inline">•</span>
+                                    <span className="whitespace-nowrap">
+                                      {formatDistanceToNow(
+                                        new Date(comment.created_at),
+                                        { addSuffix: true }
+                                      )}
+                                    </span>
+                                  </div>
                                 </div>
                                 <div className="flex items-center space-x-1 flex-shrink-0">
                                   {/* Like button moved to the right */}
@@ -444,7 +426,7 @@ export function Comments({
                                         comment.is_liked_by_user
                                       )
                                     }
-                                    className={`flex items-center space-x-1 h-5 sm:h-6 px-1 transition-all duration-200 ${
+                                    className={`flex items-center space-x-1 h-5 sm:h-6 px-1 min-w-0 transition-all duration-200 ${
                                       comment.is_liked_by_user
                                         ? "text-pink-600 hover:text-pink-700 bg-pink-50 dark:bg-pink-900/20"
                                         : "text-gray-500 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
@@ -458,7 +440,7 @@ export function Comments({
                                       }`}
                                     />
                                     {comment.likes_count > 0 && (
-                                      <span className="text-xs font-medium">
+                                      <span className="text-xs font-medium hidden xs:inline">
                                         {comment.likes_count}
                                       </span>
                                     )}
@@ -494,7 +476,7 @@ export function Comments({
                                 </div>
                               </div>
                               {/* Content */}
-                              <div className="text-gray-800 dark:text-gray-200 leading-relaxed text-xs sm:text-sm break-words">
+                              <div className="text-gray-800 dark:text-gray-200 leading-relaxed text-xs sm:text-sm break-words overflow-hidden">
                                 <ParsedText content={comment.content} />
                               </div>
                             </div>
