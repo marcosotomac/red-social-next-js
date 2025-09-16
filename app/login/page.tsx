@@ -133,8 +133,6 @@ export default function LoginPage() {
             </p>
           </CardContent>
         </Card>
-
-
       </div>
     </div>
   );

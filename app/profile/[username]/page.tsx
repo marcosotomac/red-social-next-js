@@ -286,10 +286,12 @@ export default function ProfilePage() {
 
   if (!currentUser || !profileUser || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
         <Navigation user={currentUser || undefined} />
         <div className="flex items-center justify-center py-12">
-          <span className="text-gray-600">Loading profile...</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            Loading profile...
+          </span>
         </div>
       </div>
     );
@@ -303,26 +305,28 @@ export default function ProfilePage() {
       .toUpperCase() || profileUser.username[0].toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
       <Navigation user={currentUser || undefined} />
 
       <main className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="grid md:grid-cols-3 gap-6">
           {/* Profile Info */}
           <div className="md:col-span-1">
-            <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-lg rounded-2xl overflow-hidden sticky top-24">
+            <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-lg rounded-2xl overflow-hidden sticky top-24">
               <CardHeader className="text-center pb-4">
-                <Avatar className="h-24 w-24 mx-auto ring-4 ring-pink-100">
+                <Avatar className="h-24 w-24 mx-auto ring-4 ring-pink-100 dark:ring-pink-900/50">
                   <AvatarImage src={profileUser.avatar_url} />
                   <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-bold text-2xl">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
-                  <h1 className="text-xl font-bold text-gray-900">
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     {profileUser.full_name || profileUser.username}
                   </h1>
-                  <p className="text-gray-500">@{profileUser.username}</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    @{profileUser.username}
+                  </p>
                 </div>
 
                 {!isOwnProfile && (
@@ -331,7 +335,7 @@ export default function ProfilePage() {
                     disabled={isFollowLoading}
                     className={`mt-3 ${
                       isFollowing
-                        ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ? "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                         : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
                     } ${
                       isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
@@ -339,7 +343,7 @@ export default function ProfilePage() {
                   >
                     {isFollowLoading ? (
                       <>
-                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-600 border-t-gray-600 dark:border-t-gray-300"></div>
                         Loading...
                       </>
                     ) : isFollowing ? (
@@ -360,20 +364,20 @@ export default function ProfilePage() {
               <CardContent className="space-y-4">
                 {/* Bio */}
                 {profileUser.bio && (
-                  <p className="text-gray-700 text-sm leading-relaxed">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                     {profileUser.bio}
                   </p>
                 )}
 
                 {/* Website */}
                 {profileUser.website && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                     <LinkIcon className="h-4 w-4" />
                     <a
                       href={profileUser.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-pink-600 hover:underline"
+                      className="text-pink-600 dark:text-pink-400 hover:underline"
                     >
                       {profileUser.website}
                     </a>
@@ -381,7 +385,7 @@ export default function ProfilePage() {
                 )}
 
                 {/* Join Date */}
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <Calendar className="h-4 w-4" />
                   <span>
                     Joined{" "}
@@ -396,16 +400,28 @@ export default function ProfilePage() {
                 {/* Stats */}
                 <div className="flex justify-between text-center">
                   <div>
-                    <p className="font-bold text-gray-900">{posts.length}</p>
-                    <p className="text-xs text-gray-500">Posts</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">
+                      {posts.length}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Posts
+                    </p>
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">{followersCount}</p>
-                    <p className="text-xs text-gray-500">Followers</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">
+                      {followersCount}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Followers
+                    </p>
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">{followingCount}</p>
-                    <p className="text-xs text-gray-500">Following</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">
+                      {followingCount}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Following
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -415,23 +431,28 @@ export default function ProfilePage() {
           {/* Posts */}
           <div className="md:col-span-2 space-y-6">
             <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-gray-900">Posts</h2>
-              <Badge variant="secondary" className="bg-pink-100 text-pink-700">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                Posts
+              </h2>
+              <Badge
+                variant="secondary"
+                className="bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300"
+              >
                 {posts.length}
               </Badge>
             </div>
 
             {posts.length === 0 ? (
               <div className="text-center py-12 space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mx-auto flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/50 dark:to-purple-900/50 rounded-full mx-auto flex items-center justify-center">
                   <span className="text-2xl">📝</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                   {isOwnProfile
                     ? "You haven't posted yet"
                     : `${profileUser.username} hasn't posted yet`}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   {isOwnProfile
                     ? "Share your first thought with the community!"
                     : "Check back later for updates."}

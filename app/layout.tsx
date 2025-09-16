@@ -36,7 +36,12 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
-          <Toaster position="top-right" expand={false} richColors closeButton />
+          <Toaster
+            position="top-center"
+            expand={false}
+            richColors
+            closeButton
+          />
         </ThemeProvider>
       </body>
     </html>
