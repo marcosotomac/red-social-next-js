@@ -65,7 +65,7 @@ export function NotificationBell({
       className={cn(
         "relative p-2 rounded-full transition-all duration-200",
         "hover:bg-pink-50 dark:hover:bg-pink-900/20",
-        "hover:shadow-lg hover:shadow-pink-200/50 dark:hover:shadow-pink-900/20",
+        "hover:shadow-lg",
         hasUnread && "text-pink-600 dark:text-pink-400",
         !hasUnread && "text-gray-600 dark:text-gray-400",
         wasRecentlyUpdated && animate && "animate-pulse",
@@ -91,18 +91,12 @@ export function NotificationBell({
             "flex items-center justify-center p-0",
             "bg-gradient-to-r from-pink-500 to-purple-600 text-white",
             "border-2 border-white dark:border-gray-900",
-            "shadow-lg shadow-pink-200/50 dark:shadow-pink-900/30",
             "rounded-full",
             wasRecentlyUpdated && animate && "animate-pulse scale-110"
           )}
         >
           {formatCount(unreadCount)}
         </Badge>
-      )}
-
-      {/* Subtle glow effect for unread notifications */}
-      {hasUnread && (
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/20 to-purple-500/20 blur-sm -z-10" />
       )}
     </Button>
   );
@@ -120,7 +114,7 @@ export function NotificationBell({
         className={cn(
           "w-80 p-0 border-0",
           "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg",
-          "shadow-2xl shadow-pink-200/20 dark:shadow-pink-900/20",
+          "shadow-xl",
           "ring-1 ring-white/20 dark:ring-gray-700/30",
           "rounded-2xl"
         )}
@@ -153,7 +147,7 @@ export function NotificationBellCompact({
       className={cn(
         "relative p-2 rounded-full transition-all duration-200",
         "hover:bg-pink-50 dark:hover:bg-pink-900/20",
-        "hover:shadow-md hover:shadow-pink-200/30 dark:hover:shadow-pink-900/20",
+        "hover:shadow-md",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -173,17 +167,11 @@ export function NotificationBellCompact({
             "absolute -top-1 -right-1 h-4 w-4 rounded-full",
             "bg-gradient-to-r from-pink-500 to-purple-600 text-white",
             "text-xs font-semibold flex items-center justify-center",
-            "border border-white dark:border-gray-900",
-            "shadow-lg shadow-pink-200/50 dark:shadow-pink-900/30"
+            "border border-white dark:border-gray-900"
           )}
         >
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
-      )}
-
-      {/* Subtle glow effect */}
-      {hasUnread && (
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/10 to-purple-500/10 blur-sm -z-10" />
       )}
     </button>
   );

@@ -8,7 +8,6 @@ import {
   MoreHorizontal,
   Trash2,
   Mail,
-  ExternalLink,
   Bell,
   Settings,
 } from "lucide-react";
@@ -26,11 +25,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { Notification } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 
-interface NotificationDropdownProps {
-  onClose?: () => void;
-}
-
-export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
+export function NotificationDropdown() {
   const {
     notifications,
     loading,
@@ -107,17 +102,6 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkAllAsRead}
-              disabled={actionLoading === "all"}
-              className="text-xs"
-            >
-              {actionLoading === "all" ? "..." : "Marcar todo como leído"}
-            </Button>
-          )}
           <Button
             variant="ghost"
             size="sm"
@@ -178,13 +162,10 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
               variant="ghost"
               size="sm"
               className="w-full"
-              onClick={() => {
-                onClose?.();
-                // TODO: Navigate to notifications page
-              }}
+              onClick={handleMarkAllAsRead}
+              disabled={actionLoading === "all"}
             >
-              Ver todas las notificaciones
-              <ExternalLink size={14} className="ml-2" />
+              Marcar todo como leído
             </Button>
           </div>
         </>

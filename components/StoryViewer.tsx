@@ -178,12 +178,12 @@ export function StoryViewer({
       const result = await toggleStoryLike(currentStory.id);
       if (result.success) {
         setIsLiked(result.isLiked);
-        
+
         // Update the local story likes count for immediate UI feedback
-        currentStory.likes_count = result.isLiked 
-          ? (currentStory.likes_count || 0) + 1 
+        currentStory.likes_count = result.isLiked
+          ? (currentStory.likes_count || 0) + 1
           : Math.max((currentStory.likes_count || 0) - 1, 0);
-        
+
         // Show feedback toast
         if (result.isLiked) {
           toast.success("¡Te gusta esta historia!");
