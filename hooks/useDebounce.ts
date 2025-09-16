@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback } from "react";
 
 /**
  * Custom hook to debounce function calls
@@ -61,7 +61,7 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(
       if (now - lastFuncRef.current >= limit) {
         lastFuncRef.current = now;
         isExecutingRef.current = true;
-        
+
         Promise.resolve(func(...args)).finally(() => {
           isExecutingRef.current = false;
         });

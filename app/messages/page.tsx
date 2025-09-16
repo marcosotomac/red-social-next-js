@@ -109,42 +109,39 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
       <Navigation user={currentUser || undefined} />
 
-      <div className="container mx-auto px-4 py-6 max-w-7xl h-[calc(100vh-4rem)]">
-        <div className="backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/20 dark:border-gray-700/30 rounded-3xl shadow-xl h-full overflow-hidden">
+      <div className="h-[calc(100vh-4rem)] container mx-auto px-4 py-2 max-w-7xl flex flex-col">
+        <div className="backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/20 dark:border-gray-700/30 rounded-3xl shadow-xl flex-1 overflow-hidden flex flex-col">
           {/* Mobile layout */}
           {isMobile ? (
-            <>
+            <div className="flex flex-col h-full overflow-hidden">
               {!selectedConversation ? (
-                <div className="w-full h-full">
-                  <ChatList
-                    conversations={conversations}
-                    selectedConversationId={selectedConversation?.id}
-                    onSelectConversation={handleSelectConversation}
-                    onNewChat={handleNewChat}
-                    loading={loading}
-                    currentUserId={currentUserId || undefined}
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-full">
-                  <ChatWindow
-                    conversation={selectedConversation}
-                    onBack={handleBackToList}
-                  />
-                </div>
-              )}
-            </>
-          ) : (
-            /* Desktop layout */
-            <div className="flex h-full">
-              {/* Sidebar */}
-              <div className="w-80 border-r border-white/20 dark:border-gray-700/30 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm">
                 <ChatList
                   conversations={conversations}
-                  selectedConversationId={selectedConversation?.id}
+                  selectedConversationId={(selectedConversation as Conversation | null)?.id}
+                  onSelectConversation={handleSelectConversation}
+                  onNewChat={handleNewChat}
+                  loading={loading}
+                  currentUserId={currentUserId || undefined}
+                />
+              ) : (
+                <ChatWindow
+                  conversation={selectedConversation}
+                  onBack={handleBackToList}
+                  className="flex-1"
+                />
+              )}
+            </div>
+          ) : (
+            /* Desktop layout */
+            <div className="flex flex-1 overflow-hidden">
+              {/* Sidebar */}
+              <div className="w-80 border-r border-white/20 dark:border-gray-700/30 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm flex-shrink-0">
+                <ChatList
+                  conversations={conversations}
+                  selectedConversationId={(selectedConversation as Conversation | null)?.id}
                   onSelectConversation={handleSelectConversation}
                   onNewChat={handleNewChat}
                   loading={loading}

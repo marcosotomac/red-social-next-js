@@ -4,6 +4,7 @@ import { Conversation } from "@/lib/chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { formatConversationTime } from "@/lib/timeUtils";
 import { MessageCircle, Plus } from "lucide-react";
@@ -147,57 +148,58 @@ export function ChatList({
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col overflow-hidden" style={{ height: '100%' }}>
       {/* Header */}
-      <div className="p-6 border-b border-white/20 dark:border-gray-700/30">
+      <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             Mensajes
           </h2>
           <Button
             size="icon"
             variant="ghost"
             onClick={onNewChat}
-            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200 h-8 w-8"
           >
-            <Plus className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+            <Plus className="h-4 w-4 text-pink-600 dark:text-pink-400" />
           </Button>
         </div>
       </div>
 
-      {/* Conversations list */}
-      <div className="flex-1 overflow-y-auto">
-        {conversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center shadow-lg">
-              <MessageCircle className="h-8 w-8 text-pink-600 dark:text-pink-400" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                No hay conversaciones
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs leading-relaxed">
-                Comienza una nueva conversación para empezar a chatear.
-              </p>
-            </div>
-            <Button
-              onClick={onNewChat}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white border-0 shadow-lg"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva conversación
-            </Button>
-          </div>
-        ) : (
-          <div className="p-3 space-y-2">
-            {conversations.map((conversation) => (
+      {/* Conversations list - Optimized scroll area */}
+      <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
+        <ScrollArea className="h-full">
+          {conversations.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full p-6 text-center space-y-3 min-h-[250px]">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center shadow-lg">
+                <MessageCircle className="h-6 w-6 text-pink-600 dark:text-pink-400" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
+                  No hay conversaciones
+                </h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 max-w-xs leading-relaxed">
+                  Comienza una nueva conversación para empezar a chatear.
+                </p>
+              </div>
               <Button
-                key={conversation.id}
-                variant="ghost"
-                className={cn(
-                  "w-full h-auto p-4 justify-start rounded-xl transition-all duration-200",
-                  "hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-md backdrop-blur-sm",
-                  selectedConversationId === conversation.id &&
+                onClick={onNewChat}
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white border-0 shadow-lg text-xs px-3 py-1 h-8"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Nueva conversación
+              </Button>
+            </div>
+          ) : (
+            <div className="p-2 space-y-1">
+              {conversations.map((conversation) => (
+                <Button
+                  key={conversation.id}
+                  variant="ghost"
+                  className={cn(
+                    "w-full h-auto p-4 justify-start rounded-xl transition-all duration-200",
+                    "hover:bg-white/60 dark:hover:bg-gray-800/60 hover:shadow-md backdrop-blur-sm",
+                    selectedConversationId === conversation.id &&
                     "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 shadow-md border border-pink-200/50 dark:border-pink-700/30"
                 )}
                 onClick={() => onSelectConversation(conversation)}
@@ -258,6 +260,7 @@ export function ChatList({
             ))}
           </div>
         )}
+        </ScrollArea>
       </div>
     </div>
   );

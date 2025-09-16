@@ -139,35 +139,35 @@ export function ChatWindow({
   }
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div className={`flex flex-col ${className} overflow-hidden`} style={{ height: '100%' }}>
       {/* Header */}
-      <div className="p-6 border-b border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
+      <div className="p-3 border-b border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {onBack && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+                className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200 h-8 w-8"
               >
-                <ArrowLeft className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                <ArrowLeft className="h-4 w-4 text-pink-600 dark:text-pink-400" />
               </Button>
             )}
 
-            <Avatar className="h-12 w-12 ring-2 ring-white/50 shadow-lg">
+            <Avatar className="h-8 w-8 ring-2 ring-white/50 shadow-lg">
               <AvatarImage src={getConversationAvatar() || undefined} />
-              <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-pink-400 to-purple-500 text-white font-semibold text-xs">
                 {getConversationInitials()}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate text-sm">
                 {getConversationTitle()}
               </h3>
               {conversation.is_group && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   {conversation.participants?.length || 0} miembros
                 </p>
               )}
@@ -177,27 +177,27 @@ export function ChatWindow({
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200"
+            className="hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full transition-all duration-200 flex-shrink-0 h-8 w-8"
           >
-            <MoreVertical className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <MoreVertical className="h-4 w-4 text-gray-600 dark:text-gray-400" />
           </Button>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-hidden bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm">
-        <ScrollArea className="h-full">
-          <div className="p-4 space-y-4">
+      {/* Messages - Flexible container with contained scroll */}
+      <div className="flex-1 bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm relative overflow-hidden" style={{ minHeight: 0 }}>
+        <ScrollArea className="h-full w-full">
+          <div className="p-3 space-y-3 min-h-full">
             {messages.length === 0 ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
-                  <span className="text-2xl">💬</span>
+              <div className="text-center py-8 space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full mx-auto flex items-center justify-center">
+                  <span className="text-lg">💬</span>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-gray-600 dark:text-gray-400 font-medium">
+                <div className="space-y-1">
+                  <p className="text-gray-600 dark:text-gray-400 font-medium text-sm">
                     No hay mensajes aún
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-500">
                     ¡Sé el primero en enviar un mensaje!
                   </p>
                 </div>
@@ -235,7 +235,7 @@ export function ChatWindow({
 
             {sendingMessage && (
               <div className="flex justify-end">
-                <div className="bg-gradient-to-r from-pink-400 to-purple-500 text-white px-4 py-2 rounded-2xl text-sm shadow-lg animate-pulse">
+                <div className="bg-gradient-to-r from-pink-400 to-purple-500 text-white px-3 py-2 rounded-2xl text-xs shadow-lg animate-pulse">
                   Enviando...
                 </div>
               </div>
@@ -249,14 +249,16 @@ export function ChatWindow({
         </ScrollArea>
       </div>
 
-      {/* Input */}
-      <ChatInput
-        onSendMessage={handleSendMessage}
-        onStartTyping={startTyping}
-        onStopTyping={stopTyping}
-        disabled={sendingMessage}
-        placeholder="Escribe un mensaje..."
-      />
+      {/* Input - Fixed at bottom */}
+      <div className="flex-shrink-0">
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          onStartTyping={startTyping}
+          onStopTyping={stopTyping}
+          disabled={sendingMessage}
+          placeholder="Escribe un mensaje..."
+        />
+      </div>
     </div>
   );
 }

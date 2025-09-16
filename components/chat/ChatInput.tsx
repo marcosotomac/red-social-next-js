@@ -99,8 +99,8 @@ export function ChatInput({
   };
 
   return (
-    <div className="p-4 border-t border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
-      <div className="flex items-end gap-3">
+    <div className="p-2 border-t border-white/20 dark:border-gray-700/30 backdrop-blur-sm bg-white/40 dark:bg-gray-800/40">
+      <div className="flex items-end gap-2">
         {/* File upload button */}
         <Button
           type="button"
@@ -108,9 +108,9 @@ export function ChatInput({
           size="icon"
           onClick={handleFileSelect}
           disabled={disabled || uploading}
-          className="flex-shrink-0 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full h-10 w-10 transition-all duration-200"
+          className="flex-shrink-0 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-full h-8 w-8 transition-all duration-200"
         >
-          <Paperclip className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <Paperclip className="h-3 w-3 text-gray-600 dark:text-gray-400" />
         </Button>
 
         {/* Hidden file input */}
@@ -132,12 +132,12 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "min-h-[48px] max-h-[120px] resize-none pr-14 border-0",
+              "min-h-[36px] max-h-[80px] resize-none pr-10 border-0",
               "bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm",
               "ring-1 ring-white/30 dark:ring-gray-700/30 rounded-2xl",
               "focus-visible:ring-2 focus-visible:ring-pink-400/50",
               "placeholder:text-gray-500 dark:placeholder:text-gray-400",
-              "text-gray-900 dark:text-gray-100"
+              "text-gray-900 dark:text-gray-100 text-sm"
             )}
             rows={1}
           />
@@ -149,20 +149,20 @@ export function ChatInput({
             onClick={handleSend}
             disabled={disabled || !message.trim() || uploading}
             className={cn(
-              "absolute right-2 bottom-2 h-10 w-10 rounded-full",
+              "absolute right-1 bottom-1 h-7 w-7 rounded-full",
               "bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600",
               "text-white shadow-lg transition-all duration-200",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >
-            <SendHorizontal className="h-5 w-5" />
+            <SendHorizontal className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
       {uploading && (
-        <div className="mt-3 text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-          <div className="animate-spin h-4 w-4 border-2 border-pink-400 border-t-transparent rounded-full" />
+        <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+          <div className="animate-spin h-3 w-3 border border-pink-400 border-t-transparent rounded-full" />
           Subiendo archivo...
         </div>
       )}

@@ -8,7 +8,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Users, Hash, TrendingUp, UserPlus, UserCheck } from "lucide-react";
+import {
+  Search,
+  Users,
+  Hash,
+  TrendingUp,
+  UserPlus,
+  UserCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { searchHashtags, getTrendingHashtags } from "@/lib/hashtags";
 import { getFollowStatus, toggleFollow } from "@/lib/follows";
@@ -48,8 +55,12 @@ export default function SearchPage() {
   const [hashtagResults, setHashtagResults] = useState<HashtagResult[]>([]);
   const [trendingTags, setTrendingTags] = useState<TrendingTag[]>([]);
   const [suggestedUsers, setSuggestedUsers] = useState<SearchUser[]>([]);
-  const [followingStates, setFollowingStates] = useState<Record<string, boolean>>({});
-  const [followLoadingStates, setFollowLoadingStates] = useState<Record<string, boolean>>({});
+  const [followingStates, setFollowingStates] = useState<
+    Record<string, boolean>
+  >({});
+  const [followLoadingStates, setFollowLoadingStates] = useState<
+    Record<string, boolean>
+  >({});
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const router = useRouter();
@@ -109,32 +120,43 @@ export default function SearchPage() {
         if (users) {
           // Get user IDs for batch stats query
           const userIds = users.map((u: { id: string }) => u.id);
-          
+
           // Get stats efficiently using the new function
           const usersStatsData = await getUsersStats(userIds);
-          
+
           // Get follow status for each user
           const usersWithStats = await Promise.all(
-            users.map(async (profile: { id: string; username: string; full_name: string; avatar_url?: string }) => {
-              const stats = usersStatsData.find(s => s.user_id === profile.id);
-              const followStatus = await getFollowStatus(user.id, profile.id);
+            users.map(
+              async (profile: {
+                id: string;
+                username: string;
+                full_name: string;
+                avatar_url?: string;
+              }) => {
+                const stats = usersStatsData.find(
+                  (s) => s.user_id === profile.id
+                );
+                const followStatus = await getFollowStatus(user.id, profile.id);
 
-              return {
-                ...profile,
-                followers_count: stats?.followers_count || 0,
-                posts_count: stats?.posts_count || 0,
-                is_following: followStatus?.is_following || false,
-              };
-            })
+                return {
+                  ...profile,
+                  followers_count: stats?.followers_count || 0,
+                  posts_count: stats?.posts_count || 0,
+                  is_following: followStatus?.is_following || false,
+                };
+              }
+            )
           );
 
           setSuggestedUsers(usersWithStats);
-          
+
           // Initialize follow states
           const initialFollowingStates: Record<string, boolean> = {};
-          usersWithStats.forEach((u: { id: string; is_following?: boolean }) => {
-            initialFollowingStates[u.id] = u.is_following || false;
-          });
+          usersWithStats.forEach(
+            (u: { id: string; is_following?: boolean }) => {
+              initialFollowingStates[u.id] = u.is_following || false;
+            }
+          );
           setFollowingStates(initialFollowingStates);
         }
       } catch (error) {
@@ -171,33 +193,44 @@ export default function SearchPage() {
         if (users) {
           // Get user IDs for batch stats query
           const userIds = users.map((u: { id: string }) => u.id);
-          
+
           // Get stats efficiently using the new function
           const usersStatsData = await getUsersStats(userIds);
-          
+
           // Get follow status for each user
           const usersWithStats = await Promise.all(
-            users.map(async (profile: { id: string; username: string; full_name: string; avatar_url?: string }) => {
-              const stats = usersStatsData.find(s => s.user_id === profile.id);
-              const followStatus = await getFollowStatus(user.id, profile.id);
+            users.map(
+              async (profile: {
+                id: string;
+                username: string;
+                full_name: string;
+                avatar_url?: string;
+              }) => {
+                const stats = usersStatsData.find(
+                  (s) => s.user_id === profile.id
+                );
+                const followStatus = await getFollowStatus(user.id, profile.id);
 
-              return {
-                ...profile,
-                followers_count: stats?.followers_count || 0,
-                posts_count: stats?.posts_count || 0,
-                is_following: followStatus?.is_following || false,
-              };
-            })
+                return {
+                  ...profile,
+                  followers_count: stats?.followers_count || 0,
+                  posts_count: stats?.posts_count || 0,
+                  is_following: followStatus?.is_following || false,
+                };
+              }
+            )
           );
 
           setSearchResults(usersWithStats);
-          
+
           // Update follow states for search results
           const searchFollowingStates: Record<string, boolean> = {};
-          usersWithStats.forEach((u: { id: string; is_following?: boolean }) => {
-            searchFollowingStates[u.id] = u.is_following || false;
-          });
-          setFollowingStates(prev => ({ ...prev, ...searchFollowingStates }));
+          usersWithStats.forEach(
+            (u: { id: string; is_following?: boolean }) => {
+              searchFollowingStates[u.id] = u.is_following || false;
+            }
+          );
+          setFollowingStates((prev) => ({ ...prev, ...searchFollowingStates }));
         }
       } catch (error) {
         console.error("Error searching:", error);
@@ -221,7 +254,7 @@ export default function SearchPage() {
   const handleFollow = async (targetUserId: string) => {
     if (!user || followLoadingStates[targetUserId]) return;
 
-    setFollowLoadingStates(prev => ({ ...prev, [targetUserId]: true }));
+    setFollowLoadingStates((prev) => ({ ...prev, [targetUserId]: true }));
 
     try {
       const result = await toggleFollow(user.id, targetUserId);
@@ -238,28 +271,31 @@ export default function SearchPage() {
 
       if (result.success) {
         // Update following state
-        setFollowingStates(prev => ({ ...prev, [targetUserId]: result.is_following }));
+        setFollowingStates((prev) => ({
+          ...prev,
+          [targetUserId]: result.is_following,
+        }));
 
         // Update local state for both suggested users and search results
         setSuggestedUsers((prev) =>
           prev.map((u) =>
             u.id === targetUserId
-              ? { 
-                  ...u, 
+              ? {
+                  ...u,
                   followers_count: result.followers_count,
-                  is_following: result.is_following 
+                  is_following: result.is_following,
                 }
               : u
           )
         );
-        
+
         setSearchResults((prev) =>
           prev.map((u) =>
             u.id === targetUserId
-              ? { 
-                  ...u, 
+              ? {
+                  ...u,
                   followers_count: result.followers_count,
-                  is_following: result.is_following 
+                  is_following: result.is_following,
                 }
               : u
           )
@@ -268,7 +304,7 @@ export default function SearchPage() {
     } catch (error) {
       console.error("Error following user:", error);
     } finally {
-      setFollowLoadingStates(prev => ({ ...prev, [targetUserId]: false }));
+      setFollowLoadingStates((prev) => ({ ...prev, [targetUserId]: false }));
     }
   };
 
@@ -297,7 +333,8 @@ export default function SearchPage() {
         .join("")
         .toUpperCase() || searchUser.username[0].toUpperCase();
 
-    const isFollowing = followingStates[searchUser.id] || searchUser.is_following || false;
+    const isFollowing =
+      followingStates[searchUser.id] || searchUser.is_following || false;
     const isLoading = followLoadingStates[searchUser.id] || false;
 
     return (
@@ -340,7 +377,7 @@ export default function SearchPage() {
                   isFollowing
                     ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
-                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isLoading ? (
                   <>

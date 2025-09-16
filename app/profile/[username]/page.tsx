@@ -12,7 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { UserPlus, UserCheck, Calendar, Link as LinkIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { getFollowStatus, toggleFollow, subscribeToFollowChanges } from "@/lib/follows";
+import {
+  getFollowStatus,
+  toggleFollow,
+  subscribeToFollowChanges,
+} from "@/lib/follows";
 import { useThrottle } from "@/hooks/useDebounce";
 
 interface User {
@@ -99,7 +103,10 @@ export default function ProfilePage() {
       setProfileUser(profile);
 
       // Get follow status and counts using the new function
-      const followStatus = await getFollowStatus(currentUser?.id || null, profile.id);
+      const followStatus = await getFollowStatus(
+        currentUser?.id || null,
+        profile.id
+      );
 
       if (followStatus) {
         setFollowersCount(followStatus.followers_count);
@@ -180,7 +187,14 @@ export default function ProfilePage() {
   }, [profileUser?.id, currentUser]);
 
   const handleFollow = async () => {
-    if (!currentUser || !profileUser || isOwnProfile || isFollowLoading || followingRef.current) return;
+    if (
+      !currentUser ||
+      !profileUser ||
+      isOwnProfile ||
+      isFollowLoading ||
+      followingRef.current
+    )
+      return;
 
     // Set both state and ref to prevent multiple calls
     setIsFollowLoading(true);
@@ -188,7 +202,7 @@ export default function ProfilePage() {
 
     try {
       console.log("Starting follow action for:", profileUser.username);
-      
+
       // Use the new toggle_follow function
       const result = await toggleFollow(currentUser.id, profileUser.id);
 
@@ -208,8 +222,15 @@ export default function ProfilePage() {
       if (result.success) {
         setIsFollowing(result.is_following);
         setFollowersCount(result.followers_count);
-        console.log("Follow status updated:", result.is_following, "Followers:", result.followers_count, "Action:", result.action);
-        
+        console.log(
+          "Follow status updated:",
+          result.is_following,
+          "Followers:",
+          result.followers_count,
+          "Action:",
+          result.action
+        );
+
         // Update the ref to match the new state
         followingRef.current = false;
       }
@@ -312,7 +333,9 @@ export default function ProfilePage() {
                       isFollowing
                         ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
-                    } ${isFollowLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    } ${
+                      isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
                     {isFollowLoading ? (
                       <>

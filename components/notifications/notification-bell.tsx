@@ -100,8 +100,6 @@ export function NotificationBell({
         </Badge>
       )}
 
-
-
       {/* Subtle glow effect for unread notifications */}
       {hasUnread && (
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/20 to-purple-500/20 blur-sm -z-10" />
