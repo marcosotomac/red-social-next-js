@@ -36,12 +36,16 @@ export default function HomePage() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" asChild>
+          <Button
+            variant="ghost"
+            asChild
+            className="text-gray-800 hover:text-gray-900 hover:bg-gray-100 font-semibold btn-enhanced"
+          >
             <Link href="/login">Sign in</Link>
           </Button>
           <Button
             asChild
-            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg"
+            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg btn-enhanced"
           >
             <Link href="/signup">Get started</Link>
           </Button>
@@ -54,17 +58,17 @@ export default function HomePage() {
           <div className="space-y-6">
             <Badge
               variant="secondary"
-              className="bg-purple-100 text-purple-800 border-purple-200"
+              className="bg-purple-100 text-purple-900 border-purple-200 font-semibold"
             >
               🚀 The smarter way to connect
             </Badge>
-            <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-center hero-title">
+            <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-center hero-title text-gray-900">
               Social media that{" "}
               <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent hero-title-gradient">
                 works for you
               </span>
             </h2>
-            <div className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed min-h-[3.5rem] flex items-center justify-center">
+            <div className="text-xl text-gray-800 max-w-2xl mx-auto leading-relaxed min-h-[3.5rem] flex items-center justify-center">
               <TypingText
                 texts={[
                   { text: "Connect with friends and family", icon: "Users" },
@@ -82,7 +86,7 @@ export default function HomePage() {
                 typeSpeed={80}
                 deleteSpeed={40}
                 pauseTime={2000}
-                className="text-xl text-gray-600"
+                className="text-xl text-gray-800 font-medium"
               />
             </div>
           </div>
@@ -91,7 +95,7 @@ export default function HomePage() {
             <Button
               size="lg"
               onClick={handleSignup}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4 w-full sm:w-auto"
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4 w-full sm:w-auto btn-enhanced"
             >
               Join SocialApp
             </Button>
@@ -99,7 +103,7 @@ export default function HomePage() {
               size="lg"
               variant="outline"
               onClick={handleLogin}
-              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4 w-full sm:w-auto"
+              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4 w-full sm:w-auto btn-enhanced font-semibold"
             >
               Sign In
             </Button>
@@ -109,7 +113,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-6 flex justify-center items-center flex-shrink-0 relative z-10">
-        <p className="text-gray-600 text-sm font-medium">
+        <p className="text-gray-700 text-sm font-semibold footer-text">
           Made by Marco Soto ❤️
         </p>
       </footer>
