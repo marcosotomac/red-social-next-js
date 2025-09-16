@@ -89,6 +89,13 @@ export default function HomePage() {
         </div>
       </main>
 
+      {/* Footer */}
+      <footer className="container mx-auto px-4 py-6 flex justify-center items-center flex-shrink-0 relative z-10">
+        <p className="text-gray-600 text-sm font-medium">
+          Made by Marco Soto ❤️
+        </p>
+      </footer>
+
       {/* Glassmorphism decorative elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
       <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
