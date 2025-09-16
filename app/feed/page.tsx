@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { PostCard } from "@/components/PostCard";
 import { CreatePost } from "@/components/CreatePost";
+import { createPost } from "@/lib/posts";
+import { type LocationData } from "@/hooks/useGeolocation";
 import { StoriesRow } from "@/components/StoriesRow";
 import { StoryViewer } from "@/components/StoryViewer";
 import { StoryCreator } from "@/components/StoryCreator";
@@ -123,6 +125,9 @@ export default function FeedPage() {
           created_at: string;
           updated_at?: string;
           author_id?: string;
+          latitude?: number;
+          longitude?: number;
+          location_address?: string;
           author_username: string;
           author_full_name: string;
           author_avatar_url?: string;
@@ -136,6 +141,9 @@ export default function FeedPage() {
           image_url: post.image_url,
           created_at: post.created_at,
           updated_at: post.updated_at,
+          latitude: post.latitude,
+          longitude: post.longitude,
+          location_address: post.location_address,
           author_id: post.author_id,
           author: {
             username: post.author_username,
@@ -190,25 +198,34 @@ export default function FeedPage() {
     fetchStories(); // Refresh stories after creating
   };
 
-  const handleCreatePost = async (content: string, imageUrl?: string) => {
+  const handleCreatePost = async (
+    content: string,
+    imageUrl?: string,
+    location?: LocationData
+  ) => {
     if (!user) return;
 
     try {
-      const { data: newPost, error } = await supabase
-        .from("posts")
-        .insert({
-          author_id: user.id,
-          content,
-          image_url: imageUrl,
-        })
-        .select("id")
-        .single();
+      // Use the new createPost function that handles location
+      const result = await createPost(
+        content,
+        imageUrl,
+        location
+          ? {
+              latitude: location.latitude,
+              longitude: location.longitude,
+              address: location.address,
+            }
+          : undefined
+      );
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Error creating post");
+      }
 
       // Process hashtags and mentions in the background
-      if (newPost) {
-        processPostContent(newPost.id, content, user.id);
+      if (result.post) {
+        processPostContent(result.post.id, content, user.id);
       }
 
       // Refresh posts

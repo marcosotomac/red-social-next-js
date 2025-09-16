@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Comments } from "@/components/Comments";
 import { PostActionsMenu } from "@/components/PostActionsMenu";
 import { EditPostDialog } from "@/components/EditPostDialog";
-import { Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { ParsedText } from "@/components/ParsedText";
@@ -20,6 +20,9 @@ interface PostCardProps {
     image_url?: string;
     created_at: string;
     updated_at?: string;
+    latitude?: number;
+    longitude?: number;
+    location_address?: string;
     author: {
       username: string;
       full_name: string;
@@ -158,6 +161,17 @@ export function PostCard({
           <div className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap text-sm sm:text-base break-words">
             <ParsedText content={postContent} />
           </div>
+
+          {/* Location Display */}
+          {post.latitude && post.longitude && (
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2 text-sm">
+              <MapPin className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+              <span className="truncate">
+                {post.location_address ||
+                  `${post.latitude.toFixed(6)}, ${post.longitude.toFixed(6)}`}
+              </span>
+            </div>
+          )}
 
           {/* Post Image */}
           {post.image_url && (

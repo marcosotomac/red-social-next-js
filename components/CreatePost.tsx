@@ -6,8 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
-import { ImageIcon, Smile, MapPin, Calendar, X } from "lucide-react";
+import { ImageIcon, Smile, MapPin, Calendar, X, Loader2 } from "lucide-react";
 import { useTypingPlaceholder } from "@/hooks/useTypingPlaceholder";
+import { useGeolocation, type LocationData } from "@/hooks/useGeolocation";
 
 interface CreatePostProps {
   user: {
@@ -15,7 +16,11 @@ interface CreatePostProps {
     full_name: string;
     avatar_url?: string;
   };
-  onPost?: (content: string, imageUrl?: string) => void;
+  onPost?: (
+    content: string,
+    imageUrl?: string,
+    location?: LocationData
+  ) => void;
 }
 
 export function CreatePost({ user, onPost }: CreatePostProps) {
@@ -23,6 +28,15 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+
+  // Hook para geolocalización
+  const {
+    location,
+    isLoading: isLoadingLocation,
+    error: locationError,
+    getCurrentLocation,
+    clearLocation,
+  } = useGeolocation();
 
   // Textos con emojis masculinos para el placeholder
   const placeholderTexts = [
@@ -48,10 +62,11 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
 
     setIsPosting(true);
     try {
-      await onPost?.(content, imageUrl || undefined);
+      await onPost?.(content, imageUrl || undefined, location || undefined);
       setContent("");
       setImageUrl(null);
       setShowImageUpload(false);
+      clearLocation();
     } catch (error) {
       console.error("Error posting:", error);
     } finally {
@@ -107,6 +122,47 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
           />
         )}
 
+        {/* Location Display Section */}
+        {location && (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <div>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    Ubicación agregada
+                  </p>
+                  {location.address && (
+                    <p className="text-xs text-green-600 dark:text-green-400 truncate max-w-xs">
+                      {location.address}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearLocation}
+                className="h-6 w-6 p-0 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Location Error Display */}
+        {locationError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <MapPin className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <p className="text-sm text-red-800 dark:text-red-200">
+                {locationError}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Actions and Post Button */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4 text-gray-500 dark:text-gray-400">
@@ -136,9 +192,23 @@ export function CreatePost({ user, onPost }: CreatePostProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-600"
+              onClick={location ? clearLocation : getCurrentLocation}
+              disabled={isLoadingLocation}
+              className={`h-8 w-8 p-0 transition-colors ${
+                location
+                  ? "bg-green-50 text-green-600"
+                  : isLoadingLocation
+                  ? "bg-gray-50 text-gray-400"
+                  : "hover:bg-green-50 hover:text-green-600"
+              }`}
             >
-              <MapPin className="h-4 w-4" />
+              {isLoadingLocation ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : location ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <MapPin className="h-4 w-4" />
+              )}
             </Button>
             <Button
               variant="ghost"

@@ -7,6 +7,9 @@ export interface Post {
   created_at: string;
   updated_at: string;
   author_id: string;
+  latitude?: number;
+  longitude?: number;
+  location_address?: string;
   author: {
     username: string;
     full_name: string;
@@ -157,5 +160,95 @@ export async function canUserEditPost(postId: string): Promise<boolean> {
     return post?.author_id === user.id;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Create a new post with optional location
+ */
+export async function createPost(
+  content: string,
+  imageUrl?: string,
+  location?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  }
+): Promise<{ success: boolean; error?: string; post?: Post }> {
+  const supabase = createClient();
+
+  try {
+    // Get current user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Usuario no autenticado" };
+    }
+
+    // Validate content
+    if (!content.trim() || content.length > 500) {
+      return {
+        success: false,
+        error: "El contenido debe tener entre 1 y 500 caracteres",
+      };
+    }
+
+    // Prepare post data
+    const postData: {
+      content: string;
+      author_id: string;
+      image_url?: string;
+      latitude?: number;
+      longitude?: number;
+      location_address?: string;
+    } = {
+      content: content.trim(),
+      author_id: user.id,
+    };
+
+    if (imageUrl) {
+      postData.image_url = imageUrl;
+    }
+
+    if (location) {
+      postData.latitude = location.latitude;
+      postData.longitude = location.longitude;
+      if (location.address) {
+        postData.location_address = location.address;
+      }
+    }
+
+    // Create the post
+    const { data: newPost, error: insertError } = await supabase
+      .from("posts")
+      .insert(postData)
+      .select(
+        `
+        *,
+        author:profiles(username, full_name, avatar_url)
+      `
+      )
+      .single();
+
+    if (insertError) {
+      console.error("Error creating post:", insertError);
+      return { success: false, error: "Error al crear el post" };
+    }
+
+    // Transform the response to match our Post interface
+    const transformedPost: Post = {
+      ...newPost,
+      likes_count: 0,
+      comments_count: 0,
+      user_has_liked: false,
+      user_has_bookmarked: false,
+    };
+
+    return { success: true, post: transformedPost };
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return { success: false, error: "Error inesperado" };
   }
 }
