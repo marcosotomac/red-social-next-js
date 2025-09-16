@@ -1,9 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TypingText } from "@/components/ui/typing-text";
 
 export default function HomePage() {
+  const handleSignup = () => {
+    console.log("Signup button clicked!");
+    window.location.href = "/signup";
+  };
+
+  const handleLogin = () => {
+    console.log("Login button clicked!");
+    window.location.href = "/login";
+  };
   return (
     <div className="h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex flex-col overflow-hidden">
       {/* Header */}
@@ -31,8 +42,8 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 container mx-auto px-4 flex flex-col justify-center items-center text-center">
-        <div className="space-y-8 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 flex flex-col justify-center items-center text-center relative z-20">
+        <div className="space-y-8 max-w-4xl relative z-20">
           <div className="space-y-6">
             <Badge
               variant="secondary"
@@ -72,18 +83,18 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              asChild
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4"
+              onClick={handleSignup}
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-lg text-lg px-8 py-4 w-full sm:w-auto"
             >
-              <Link href="/signup">Join SocialApp</Link>
+              Join SocialApp
             </Button>
             <Button
               size="lg"
               variant="outline"
-              asChild
-              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4"
+              onClick={handleLogin}
+              className="border-2 border-purple-200 hover:bg-purple-50 text-purple-700 text-lg px-8 py-4 w-full sm:w-auto"
             >
-              <Link href="/login">Sign In</Link>
+              Sign In
             </Button>
           </div>
         </div>
@@ -97,9 +108,9 @@ export default function HomePage() {
       </footer>
 
       {/* Glassmorphism decorative elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-      <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse pointer-events-none"></div>
+      <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000 pointer-events-none"></div>
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000 pointer-events-none"></div>
     </div>
   );
 }
