@@ -1,4 +1,4 @@
-# Softsocial - A Gentle Social Media Platform
+# quefuesocial - A Gentle Social Media Platform
 
 A mindful social media platform built with Next.js, Supabase, and shadcn/ui components, focusing on kindness and meaningful connections.
 
