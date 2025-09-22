@@ -2,7 +2,7 @@
 
 A mindful social media platform built with Next.js, Supabase, and shadcn/ui components, focusing on kindness and meaningful connections.
 
-## 🌸 Features
+## Features
 
 ### Core Social Features
 
@@ -204,4 +204,3 @@ This project is a MVP demonstration. Use it as a starting point for your own soc
 
 ---
 
-**Built with 💜 for meaningful connections**
